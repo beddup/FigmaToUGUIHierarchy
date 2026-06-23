@@ -1,4 +1,4 @@
-# Figma2UGUI Hierarchy
+# Figma to UGUI Hierarchy
 
 A multi-agent workflow compatible with both Claude Code and Codex. It reads a
 specific Figma node and its screenshot, interprets the design semantics, and
