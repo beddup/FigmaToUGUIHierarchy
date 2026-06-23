@@ -1,5 +1,5 @@
 ---
-name: prefab_hierarchy_creation_workflow
+name: figma_to_ugui_hierarchy
 description: This is a workflow for creating prefab hierarchy from figma url.
 allowed-tools: Read, Grep, Glob, Write, Bash, Edit, Skill
 ---
@@ -69,10 +69,10 @@ when you get all the node subtree prefab hierarchy, you go to step 4
 
 Now you have all the subtree prefab hierarchy, you combine them into a large and complete one, which matches the whole figma content.
 
-run the python script `.claude/skills/prefab_hierarchy_creation_workflow/scripts/combine_hierarchy.py` from the project root to combine multiple prefab hierarchy files:
+run the python script `.agents/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py` from the project root to combine multiple prefab hierarchy files:
 
 ```bash
-python3 .claude/skills/prefab_hierarchy_creation_workflow/scripts/combine_hierarchy.py \
+python3 .agents/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py \
   <hierarchy_file_1.json> <hierarchy_file_2.json> ... \
   -f <simplified_content_path> \
   -o "<working_dir_path>/prefab_hierarchy_combined.json"

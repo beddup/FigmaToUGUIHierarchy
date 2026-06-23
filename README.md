@@ -1,4 +1,4 @@
-# Figma to Unity Prefab Hierarchy
+# Figma2UGUI Hierarchy
 
 A multi-agent workflow compatible with both Claude Code and Codex. It reads a
 specific Figma node and its screenshot, interprets the design semantics, and
@@ -40,11 +40,11 @@ the Agent should ask the user for a token.
 
 ## Usage
 
-Invoke `prefab_hierarchy_creation_workflow` in Claude Code or Codex and provide
+Invoke `figma_to_ugui_hierarchy` in Claude Code or Codex and provide
 a Figma URL containing a `node-id`, for example:
 
 ```text
-Use skill prefab_hierarchy_creation_workflow to process:
+Use skill figma_to_ugui_hierarchy to process:
 https://www.figma.com/design/<file-key>/<name>?node-id=123-456
 ```
 
