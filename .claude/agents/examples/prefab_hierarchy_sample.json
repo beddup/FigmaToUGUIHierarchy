@@ -4,6 +4,8 @@
   "gameObjectCategory": "container",
   "gameObjectName": "a meaningful and descriptive name",
   "isButton": false,
+  "horizontal_alignment": "center",
+  "vertical_alignment": "center",
   "children": [
     {
       "nodeId": "node id",
@@ -11,6 +13,8 @@
       "gameObjectCategory": "image",
       "gameObjectName": "a meaningful and descriptive name",
       "isButton": false,
+      "horizontal_alignment": "center",
+      "vertical_alignment": "center",
       "children": []
     },
     {
@@ -19,6 +23,8 @@
       "gameObjectCategory": "image",
       "gameObjectName": "a meaningful and descriptive name",
       "isButton": false,
+      "horizontal_alignment": "center",
+      "vertical_alignment": "center",
       "children": [
         {
           "nodeId": "node id",
@@ -26,6 +32,8 @@
           "gameObjectCategory": "text",
           "gameObjectName": "a meaningful and descriptive name",
           "isButton": false,
+          "horizontal_alignment": "center",
+          "vertical_alignment": "center",
           "children": []
         }
       ]
@@ -36,6 +44,8 @@
       "gameObjectCategory": "container",
       "gameObjectName": "a meaningful and descriptive name",
       "isButton": true,
+      "horizontal_alignment": "center",
+      "vertical_alignment": "bottom",
       "children": [
         {
           "nodeId": "node id",
@@ -43,6 +53,8 @@
           "gameObjectCategory": "image",
           "gameObjectName": "a meaningful and descriptive name",
           "isButton": false,
+          "horizontal_alignment": "center",
+          "vertical_alignment": "center",
           "children": []
         },
         {
@@ -51,6 +63,8 @@
           "gameObjectCategory": "text",
           "gameObjectName": "a meaningful and descriptive name",
           "isButton": false,
+          "horizontal_alignment": "center",
+          "vertical_alignment": "center",
           "children": []
         }
       ]

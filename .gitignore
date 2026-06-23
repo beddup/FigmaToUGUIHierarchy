@@ -1,0 +1,11 @@
+.DS_Store
+.idea/
+__pycache__/
+*.py[cod]
+
+# Generated Figma intermediates and Unity handoff files.
+Library/FigmaToUGUI/
+Assets/FigmaAssets/*_result.json
+
+# Local agent configuration may contain machine-specific permissions.
+.claude/settings.local.json

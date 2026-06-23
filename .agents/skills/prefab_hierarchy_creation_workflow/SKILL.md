@@ -4,13 +4,19 @@ description: This is a workflow for creating prefab hierarchy from figma url.
 allowed-tools: Read, Grep, Glob, Write, Bash, Edit, Skill
 ---
 
-You are provided a figma content url and a figma api token. 
+You are provided a Figma content URL.
+
+Resolve the Figma API token before starting:
+
+1. Use the `FIGMA_API_TOKEN` environment variable when it is available.
+2. If `FIGMA_API_TOKEN` is not set, ask the user to provide a token.
+3. Never read a token from repository files or hard-code it in commands, prompts, or configuration.
 
 Follow the steps to create unity prefab hierarchy.
 
 ## Step 1 : get the figma content
 
-start a subagent `fetch_figma_content`, pass the figma content url and api token to it.
+start a subagent `fetch_figma_content`, pass the figma content URL and the resolved API token to it.
 
 we will get a json data
 
@@ -18,7 +24,7 @@ we will get a json data
 {
   "figma_url":"the input figma url",
   "file_key": "<figma_file_key>",
-  "api_token":"the input api token",
+  "api_token": "<the resolved FIGMA_API_TOKEN or user-provided token>",
   "node_id": "<node_id>",
   "node_name": "<node_name>", 
   "working_dir_path": "<working_dir_path>",
