@@ -22,12 +22,21 @@ responsive alignment metadata.
 7. Write the file index and Figma token needed by the downstream Unity Editor
    step to `Assets/FigmaAssets/<working_dir_name>_result.json`.
 
+To continue the workflow inside Unity, use
+[beddup/FigmaUGUIPrefabBuilder](https://github.com/beddup/FigmaUGUIPrefabBuilder.git).
+It consumes the generation-result JSON produced by `figma_to_ugui_hierarchy`
+and builds real Unity uGUI prefab assets in the Unity Editor, including the
+GameObject hierarchy, `RectTransform` layout, images, TextMeshPro text, colors,
+and button components.
+
 ## Requirements
 
 - Python 3.9 or later.
 - A Figma Personal Access Token with access to the target file.
 - Claude Code or a Codex environment that supports project Agent and Skill
   configuration.
+
+Using a model with visual understanding capabilities is recommended.
 
 Provide the token through an environment variable:
 
