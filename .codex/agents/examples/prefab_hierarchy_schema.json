@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "prefab-hierarchy-schema",
+  "title": "Prefab Hierarchy JSON Schema",
+  "description": "JSON schema for Unity uGUI prefab hierarchy generated from Figma designs",
+  "type": "object",
+  "required": [
+    "nodeId",
+    "nodeName",
+    "gameObjectCategory",
+    "gameObjectName",
+    "isButton",
+    "horizontal_alignment",
+    "vertical_alignment",
+    "children"
+  ],
+  "properties": {
+    "nodeId": {
+      "type": "string",
+      "description": "Unique identifier from Figma node (e.g., '4590:9919')"
+    },
+    "nodeName": {
+      "type": "string",
+      "description": "Original name from Figma node (e.g., '排行榜_结算无奖励')"
+    },
+    "gameObjectCategory": {
+      "type": "string",
+      "enum": [
+        "container",
+        "image",
+        "text",
+        "color"
+      ],
+      "description": "Unity GameObject category"
+    },
+    "gameObjectName": {
+      "type": "string",
+      "description": "Meaningful and descriptive name for the GameObject in PascalCase (e.g., 'LeaderboardSettlementNoReward')"
+    },
+    "isButton": {
+      "type": "boolean",
+      "description": "Whether this GameObject should have a Button component attached"
+    },
+    "horizontal_alignment": {
+      "type": "string",
+      "enum": [
+        "left",
+        "center",
+        "right"
+      ],
+      "description": "Responsive horizontal alignment for Unity layout adaptation"
+    },
+    "vertical_alignment": {
+      "type": "string",
+      "enum": [
+        "top",
+        "center",
+        "bottom"
+      ],
+      "description": "Responsive vertical alignment for Unity layout adaptation"
+    },
+    "children": {
+      "type": "array",
+      "description": "Child GameObjects in the hierarchy",
+      "items": {
+        "$ref": "#"
+      }
+    }
+  },
+  "definitions": {},
+  "examples": [
+    {
+      "nodeId": "4590:9919",
+      "nodeName": "排行榜_结算无奖励",
+      "gameObjectCategory": "container",
+      "gameObjectName": "LeaderboardSettlementNoReward",
+      "isButton": false,
+      "horizontal_alignment": "center",
+      "vertical_alignment": "center",
+      "children": [
+        {
+          "nodeId": "4590:9920",
+          "nodeName": "Background",
+          "gameObjectCategory": "image",
+          "gameObjectName": "Background",
+          "isButton": false,
+          "horizontal_alignment": "center",
+          "vertical_alignment": "center",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

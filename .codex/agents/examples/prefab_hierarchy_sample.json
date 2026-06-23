@@ -1,0 +1,59 @@
+{
+  "nodeId": "root node id",
+  "nodeName": "root node name",
+  "gameObjectCategory": "container",
+  "gameObjectName": "a meaningful and descriptive name",
+  "isButton": false,
+  "children": [
+    {
+      "nodeId": "node id",
+      "nodeName": "node name",
+      "gameObjectCategory": "image",
+      "gameObjectName": "a meaningful and descriptive name",
+      "isButton": false,
+      "children": []
+    },
+    {
+      "nodeId": "node id",
+      "nodeName": "node name",
+      "gameObjectCategory": "image",
+      "gameObjectName": "a meaningful and descriptive name",
+      "isButton": false,
+      "children": [
+        {
+          "nodeId": "node id",
+          "nodeName": "node name",
+          "gameObjectCategory": "text",
+          "gameObjectName": "a meaningful and descriptive name",
+          "isButton": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "nodeId": "node id",
+      "nodeName": "node name",
+      "gameObjectCategory": "container",
+      "gameObjectName": "a meaningful and descriptive name",
+      "isButton": true,
+      "children": [
+        {
+          "nodeId": "node id",
+          "nodeName": "node name",
+          "gameObjectCategory": "image",
+          "gameObjectName": "a meaningful and descriptive name",
+          "isButton": false,
+          "children": []
+        },
+        {
+          "nodeId": "node id",
+          "nodeName": "node name",
+          "gameObjectCategory": "text",
+          "gameObjectName": "a meaningful and descriptive name",
+          "isButton": false,
+          "children": []
+        }
+      ]
+    }
+  ]
+}
