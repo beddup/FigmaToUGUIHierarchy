@@ -20,7 +20,7 @@ responsive alignment metadata.
 6. Refine containers, hierarchy, naming, and alignment based on the screenshot,
    actual rendering overlaps, and Unity uGUI conventions.
 7. Write the file index and Figma token needed by the downstream Unity Editor
-   step to `Assets/FigmaAssets/<working_dir_name>_result.json`.
+   step to `Assets/FigmaData/<working_dir_name>/hierarchy_result.json`;.
 
 To continue the workflow inside Unity, use
 [beddup/FigmaUGUIPrefabBuilder](https://github.com/beddup/FigmaUGUIPrefabBuilder.git).

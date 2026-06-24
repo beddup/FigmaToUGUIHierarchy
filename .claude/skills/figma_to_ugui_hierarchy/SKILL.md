@@ -98,8 +98,10 @@ Output only the refined hierarchy file path.
 
 ## Step 6: Create the result json file
 
-get the last path component of `working_dir_path` as `working_dir_name`, create a json file with path `Assets/FigmaAssets/<working_dir_name>_result.json`, force override if exists.
-The content is  
+Get the last path component of `working_dir_path` as `working_dir_name`;
+
+Create a json file at `Assets/FigmaData/<working_dir_name>/hierarchy_result.json`;
+The content is
 
 ```json
 {
@@ -108,10 +110,7 @@ The content is
   "api_token":"api_token from Step 1",
   "node_id": "node_id from Step 1",
   "node_name": "node_name from Step 1",
-  "working_dir_path": "working_dir_path from Step 1",
-  "raw_content_path": "raw_content_path from Step 1",
-  "content_screen_path": "content_screen_path from Step 1",
-  "simplified_content_path": "simplified_content_path from Step 1",
-  "prefab_hierarchy_path": "refine prefab hierarchy file path from Step 5"
+  "raw_content_path": "copy the file at raw_content_path from Step 1 to folder `Assets/FigmaData/<working_dir_name>`",
+  "prefab_hierarchy_path": "copy the refine prefab hierarchy file from Step 5 to folder `Assets/FigmaData/<working_dir_name>`"
 }
 ```
