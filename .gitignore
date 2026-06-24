@@ -5,7 +5,8 @@ __pycache__/
 
 # Generated Figma intermediates and Unity handoff files.
 Library/FigmaToUGUI/
-Assets/FigmaData/*_result.json
+Assets/FigmaData/
+Assets/
 
 # Local agent configuration may contain machine-specific permissions.
 .claude/settings.local.json
