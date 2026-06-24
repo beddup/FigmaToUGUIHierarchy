@@ -77,13 +77,3 @@ main fields are:
 
 Supported `gameObjectCategory` values are `container`, `image`, `text`, and
 `color`.
-
-## Security
-
-- Never store tokens in Agent configuration, documentation, test fixtures, or
-  commit history.
-- `.claude/settings.local.json` is machine-specific and must not be committed.
-- Result JSON files contain a token and should only be used in the local Unity
-  project.
-- If a token appears in version control or shared logs, revoke it in Figma and
-  generate a replacement immediately.
