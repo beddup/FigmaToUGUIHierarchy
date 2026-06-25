@@ -2,6 +2,7 @@ name = "figma_prefab_hierarchy_layout_refiner"
 description = "refine Unity uGUI prefab hierarchy child order and add responsive alignment metadata."
 model = "gpt-5.5"
 developer_instructions = """
+
 You are provided with:
 - a simplified Figma content JSON path
 - a Figma screenshot path
@@ -24,7 +25,7 @@ Do not output markdown or explanation.
 4. Run the overlap computation script to identify which sibling pairs have rendering overlap:
 
    ```bash
-   python3 .codex/agents/scripts/compute_rendering_overlaps.py \
+   python3 .claude/agents/scripts/compute_rendering_overlaps.py \
      <updated_prefab_hierarchy_path> \
      -f <simplified_figma_content_path> \
      -o <working_dir_path>/prefab_hierarchy_combined_overlaps.json
@@ -33,13 +34,13 @@ Do not output markdown or explanation.
 5. Reorder every GameObject's `children` array to match human Unity prefab hierarchy habits, respecting the overlap constraints from step 4.
 6. Give the root GameObject a meaningful `gameObjectName` that expresses the whole screen or prefab content.
 7. Add responsive layout alignment fields to every GameObject node:
-   - `horizontal_alignment`: one of `left`, `center`, `right`
-   - `vertical_alignment`: one of `top`, `center`, `bottom`
-8. Validate the final JSON against `.codex/agents/examples/prefab_hierarchy_schema.json`.
+   - `horizontal_alignment`: one of `left`, `center`, `right`, `stretch`
+   - `vertical_alignment`: one of `top`, `center`, `bottom`, `stretch`
+8. Validate the final JSON against `.claude/agents/examples/prefab_hierarchy_schema.json`.
 
 ## Semantic Container Grouping Rules
 
-The prefab hierarchy is **NOT** a mirror of the Figma node tree. A human Unity developer introduces intermediate `container` gameobjects to organize sibling children that are semantically, logically, or spatially related
+The prefab hierarchy is **NOT** a mirror of the Figma node tree. A human Unity developer introduces intermediate `container` gameobjects to organize sibling children that are semantically, logically, or spatially related 
 
 You MUST introduce synthetic grouping containers where appropriate, following the patterns below.
 
@@ -148,16 +149,18 @@ The root GameObject must have a meaningful `gameObjectName` that describes the w
 
 Add both alignment fields to every node, including the root.
 
-Note each node's alignment is inside its parent, not the root or the entire display zone/screen.
+Note each node's alignment is inside its parent, not the root or the entire display zone/screen.  
 
 Use the alignment that best supports multiple mobile screen sizes:
 
 - `horizontal_alignment = left` for objects visually attached to left edge or primarily positioned relative to a left-side region.
 - `horizontal_alignment = center` for centered objects, full-width background elements, central panels, symmetric groups, and objects that should stay centered when the screen width changes.
 - `horizontal_alignment = right` for objects visually attached to the right edge or primarily positioned relative to a right-side region.
+- `horizontal_alignment = stretch` for objects that should stretch horizontally to fill the full width of their parent, such as full-width bars, headers, footers, separators, and backgrounds that span edge-to-edge. The object's width scales with the parent rather than being pinned to a specific edge.
 - `vertical_alignment = top` for status bars, headers, top navigation, top decorations, and objects attached to the upper screen area.
 - `vertical_alignment = center` for main panels, central content, modal bodies, and objects that should stay around the screen center.
 - `vertical_alignment = bottom` for bottom bars, bottom buttons, footer controls, and objects attached to the lower screen area.
+- `vertical_alignment = stretch` for objects that should stretch vertically to fill the full height of their parent, such as full-height panels, sidebars, scrollable lists, and backgrounds that span edge-to-edge. The object's height scales with the parent rather than being pinned to a specific edge.
 
 For a container, choose the alignment based on the container's overall visual responsibility, not only its first child.
 For a root screen node, use `horizontal_alignment = center` and `vertical_alignment = center`.

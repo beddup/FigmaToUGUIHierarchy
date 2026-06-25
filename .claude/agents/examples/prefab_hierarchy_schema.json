@@ -46,7 +46,8 @@
       "enum": [
         "left",
         "center",
-        "right"
+        "right",
+        "stretch"
       ],
       "description": "Responsive horizontal alignment for Unity layout adaptation"
     },
@@ -55,7 +56,8 @@
       "enum": [
         "top",
         "center",
-        "bottom"
+        "bottom",
+        "stretch"
       ],
       "description": "Responsive vertical alignment for Unity layout adaptation"
     },
