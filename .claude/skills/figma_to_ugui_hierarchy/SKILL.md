@@ -110,7 +110,7 @@ The content is
   "api_token":"api_token from Step 1",
   "node_id": "node_id from Step 1",
   "node_name": "node_name from Step 1",
-  "raw_content_path": "copy the file at raw_content_path from Step 1 to folder `Assets/FigmaData/<working_dir_name>`",
-  "prefab_hierarchy_path": "copy the refine prefab hierarchy file from Step 5 to folder `Assets/FigmaData/<working_dir_name>`"
+  "raw_content_path": "copy the file at raw_content_path from Step 1 to folder `Assets/FigmaData/<working_dir_name>`, use relative path",
+  "prefab_hierarchy_path": "copy the refine prefab hierarchy file from Step 5 to folder `Assets/FigmaData/<working_dir_name>`, use relation path"
 }
 ```
