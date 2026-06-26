@@ -61,6 +61,11 @@
       ],
       "description": "Responsive vertical alignment for Unity layout adaptation"
     },
+    "image_type": {
+      "type": "string",
+      "enum": ["simple", "sliced", "tiled"],
+      "description": "Image fill type. Required when gameObjectCategory is 'image'. simple: basic fill, sliced: 9-slice, tiled: tiled fill"
+    },
     "children": {
       "type": "array",
       "description": "Child GameObjects in the hierarchy",
@@ -68,6 +73,15 @@
         "$ref": "#"
       }
     }
+  },
+  "if": {
+    "properties": {
+      "gameObjectCategory": { "const": "image" }
+    },
+    "required": ["gameObjectCategory"]
+  },
+  "then": {
+    "required": ["image_type"]
   },
   "definitions": {},
   "examples": [
@@ -86,6 +100,7 @@
           "gameObjectCategory": "image",
           "gameObjectName": "Background",
           "isButton": false,
+          "image_type": "simple",
           "horizontal_alignment": "center",
           "vertical_alignment": "center",
           "children": []

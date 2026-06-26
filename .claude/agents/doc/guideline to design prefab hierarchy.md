@@ -18,6 +18,24 @@ There are 4 categories:
 - `color` : a rectangle filled with color;
 - `container` : render nothing, a container grouping its children.
 
+### image_type
+
+When `gameObjectCategory` is `image`, you **MUST** set the `image_type` field to specify how the image should be filled in Unity uGUI. Choose from three values:
+
+| value | Unity equivalent | description |
+|-------|-----------------|-------------|
+| `simple` | `Image.Type.Simple` | basic fill — the image scales to fit the rect without any slicing or tiling |
+| `sliced` | `Image.Type.Sliced` | 9-slice fill — the image is divided into 9 regions using a border, corners stay unscaled while edges and center stretch |
+| `tiled` | `Image.Type.Tiled` | tiled fill — the image repeats to fill the rect area |
+
+**How to decide which image_type to use:**
+
+- Use `simple` as the default for most images (icons, backgrounds, common UI elements).
+- Use `sliced` when he visual design suggests a 9-slice pattern (distinct corner/edge/center regions).
+- Use `tiled` when: The visual content is meant to repeat across the available space rather than stretch.
+
+This field is **only required** for `image` category gameobjects. Do NOT set it for `text`, `color`, or `container` categories.
+
 ## Create gameobject
 
 walk through the flatNodes array in DFS order, for each node, find where it is in the screenshot, figure out what it is.

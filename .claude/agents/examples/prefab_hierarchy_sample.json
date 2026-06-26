@@ -13,6 +13,7 @@
       "gameObjectCategory": "image",
       "gameObjectName": "a meaningful and descriptive name",
       "isButton": false,
+      "image_type": "simple",
       "horizontal_alignment": "center",
       "vertical_alignment": "center",
       "children": []
@@ -23,6 +24,7 @@
       "gameObjectCategory": "image",
       "gameObjectName": "a meaningful and descriptive name",
       "isButton": false,
+      "image_type": "sliced",
       "horizontal_alignment": "center",
       "vertical_alignment": "center",
       "children": [
@@ -53,6 +55,7 @@
           "gameObjectCategory": "image",
           "gameObjectName": "a meaningful and descriptive name",
           "isButton": false,
+          "image_type": "tiled",
           "horizontal_alignment": "center",
           "vertical_alignment": "center",
           "children": []
