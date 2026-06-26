@@ -26,7 +26,7 @@ we will get a json data
   "file_key": "<figma_file_key>",
   "api_token": "<the resolved FIGMA_API_TOKEN or user-provided token>",
   "node_id": "<node_id>",
-  "node_name": "<node_name>", 
+  "node_name": "<node_name>",
   "working_dir_path": "<working_dir_path>",
   "raw_content_path": "<raw_figma_content_file_path>",
   "content_screen_path": "<figma_content_screenshot_path>",
@@ -69,10 +69,10 @@ when you get all the node subtree prefab hierarchy, you go to step 4
 
 Now you have all the subtree prefab hierarchy, you combine them into a large and complete one, which matches the whole figma content.
 
-run the python script `.claude/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py` from the project root to combine multiple prefab hierarchy files:
+run the python script `.agents/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py` from the project root to combine multiple prefab hierarchy files:
 
 ```bash
-python3 .claude/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py \
+python3 .agents/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py \
   <hierarchy_file_1.json> <hierarchy_file_2.json> ... \
   -f <simplified_content_path> \
   -o "<working_dir_path>/prefab_hierarchy_combined.json"
@@ -90,17 +90,18 @@ Start a subagent `figma_prefab_hierarchy_layout_refiner`, pass:
 - `simplified_content_path` from Step 1
 - `content_screen_path` from Step 1
 - the combined `prefab_hierarchy_path` from Step 4
-- working directory path (`working_dir_path`) from step 1 
+- working directory path (`working_dir_path`) from step 1
 
 The subagent refines the combined hierarchy for Unity prefab authoring, including child order, responsive layout alignment metadata, and meaningful root naming.
 
-Output only the refined hierarchy file path.
+Output only the refined hierarchy file path, the file name should be `<root gameObjectName>_hierarchy.json`
+
 
 ## Step 6: Create the result json file
 
 Get the last path component of `working_dir_path` as `working_dir_name`;
-
-Create a json file at `Assets/FigmaData/<working_dir_name>/hierarchy_result.json`;
+Create a folder with name `<root gameObjectName>_<working_dir_name>` at path `Assets/FigmaData`.
+Then under this folder, create a json file named `<root gameObjectName>_<working_dir_name>_hierarchy_result.json`;
 The content is
 
 ```json

@@ -16,7 +16,7 @@ Your job is to refine the prefab hierarchy so it is more suitable for a human-ma
 
 ## Output
 
-You must save the refined hierarchy to `<working_dir_path>/prefab_hierarchy_combined_layout_refined.json` and output only the refined hierarchy file path.
+You must save the refined hierarchy to `<working_dir_path>/<root gameObjectName>_hierarchy.json` and output only the refined hierarchy file path.
 
 Do not output markdown or explanation.
 
@@ -43,7 +43,7 @@ Do not output markdown or explanation.
 
 ## Semantic Container Grouping Rules
 
-The prefab hierarchy is **NOT** a mirror of the Figma node tree. A human Unity developer introduces intermediate `container` gameobjects to organize sibling children that are semantically, logically, or spatially related 
+The prefab hierarchy is **NOT** a mirror of the Figma node tree. A human Unity developer introduces intermediate `container` gameobjects to organize sibling children that are semantically, logically, or spatially related
 
 You MUST introduce synthetic grouping containers where appropriate, following the patterns below.
 
@@ -152,7 +152,7 @@ The root GameObject must have a meaningful `gameObjectName` that describes the w
 
 Add both alignment fields to every node, including the root.
 
-Note each node's alignment is inside its parent, not the root or the entire display zone/screen.  
+Note each node's alignment is inside its parent, not the root or the entire display zone/screen.
 
 Use the alignment that best supports multiple mobile screen sizes:
 

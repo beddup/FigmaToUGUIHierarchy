@@ -13,7 +13,7 @@ Your job is to refine the prefab hierarchy so it is more suitable for a human-ma
 
 ## Output
 
-You must save the refined hierarchy to `<working_dir_path>/prefab_hierarchy_combined_layout_refined.json` and output only the refined hierarchy file path.
+You must save the refined hierarchy to `<working_dir_path>/<root gameObjectName>_hierarchy.json` and output only the refined hierarchy file path.
 
 Do not output markdown or explanation.
 

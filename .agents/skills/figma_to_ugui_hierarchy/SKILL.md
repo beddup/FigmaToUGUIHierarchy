@@ -94,14 +94,14 @@ Start a subagent `figma_prefab_hierarchy_layout_refiner`, pass:
 
 The subagent refines the combined hierarchy for Unity prefab authoring, including child order, responsive layout alignment metadata, and meaningful root naming.
 
-Output only the refined hierarchy file path.
+Output only the refined hierarchy file path, the file name should be `<root gameObjectName>_hierarchy.json`
 
 
 ## Step 6: Create the result json file
 
 Get the last path component of `working_dir_path` as `working_dir_name`;
-
-Create a json file at `Assets/FigmaData/<working_dir_name>/hierarchy_result.json`;
+Create a folder with name `<root gameObjectName>_<working_dir_name>` at path `Assets/FigmaData`.
+Then under this folder, create a json file named `<root gameObjectName>_<working_dir_name>_hierarchy_result.json`;
 The content is
 
 ```json
