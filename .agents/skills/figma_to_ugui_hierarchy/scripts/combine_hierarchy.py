@@ -39,6 +39,22 @@ def collect_all_nodes_with_merged_children(hierarchies: List[Dict]) -> Dict[str,
     """
     all_nodes: Dict[str, Dict] = {}
 
+    def copy_node_data(node: Dict, current_children: List[Dict], child_ids: Set[str]) -> Dict:
+        copied = {
+            'nodeId': node.get('nodeId'),
+            'nodeName': node.get('nodeName'),
+            'gameObjectCategory': node.get('gameObjectCategory'),
+            'gameObjectName': node.get('gameObjectName'),
+            'isButton': node.get('isButton', False),
+            'horizontal_alignment': node.get('horizontal_alignment', 'center'),
+            'vertical_alignment': node.get('vertical_alignment', 'center'),
+            'children': current_children,  # Store actual children list
+            '_child_ids': child_ids  # Track child IDs for merging
+        }
+        if node.get('gameObjectCategory') == 'image' and node.get('image_type'):
+            copied['image_type'] = node.get('image_type')
+        return copied
+
     # First pass: collect all nodes and merge children
     for hierarchy in hierarchies:
         # Use stack to traverse
@@ -58,20 +74,16 @@ def collect_all_nodes_with_merged_children(hierarchies: List[Dict]) -> Dict[str,
 
             if node_id not in all_nodes:
                 # First occurrence - store node data and children
-                all_nodes[node_id] = {
-                    'nodeId': node.get('nodeId'),
-                    'nodeName': node.get('nodeName'),
-                    'gameObjectCategory': node.get('gameObjectCategory'),
-                    'gameObjectName': node.get('gameObjectName'),
-                    'isButton': node.get('isButton', False),
-                    'horizontal_alignment': node.get('horizontal_alignment', 'center'),
-                    'vertical_alignment': node.get('vertical_alignment', 'center'),
-                    'children': current_children,  # Store actual children list
-                    '_child_ids': child_ids  # Track child IDs for merging
-                }
+                all_nodes[node_id] = copy_node_data(node, current_children, child_ids)
             else:
                 # Node already exists - MERGE children (Rule 4)
                 existing = all_nodes[node_id]
+                if (
+                    existing.get('gameObjectCategory') == 'image'
+                    and not existing.get('image_type')
+                    and node.get('image_type')
+                ):
+                    existing['image_type'] = node.get('image_type')
                 for child in current_children:
                     child_id = child.get('nodeId')
                     if child_id and child_id not in existing['_child_ids']:
@@ -134,6 +146,8 @@ def build_tree(node_id: str, all_nodes: Dict[str, Dict],
         'vertical_alignment': node.get('vertical_alignment', 'center'),
         'children': []
     }
+    if result['gameObjectCategory'] == 'image' and node.get('image_type'):
+        result['image_type'] = node.get('image_type')
 
     # Recursively build children
     for child in node.get('children', []):

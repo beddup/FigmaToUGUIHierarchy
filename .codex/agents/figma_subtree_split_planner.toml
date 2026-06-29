@@ -34,7 +34,7 @@ You get JSON:
 }
 ```
 
-**If `needs_split` is `false`, return the `subtrees` value and stop.** No further work needed.
+**If `needs_split` is `false`, return a JSON object exactly in the final output format using the `subtrees` array from the check result, and stop.** No further work needed.
 
 ## Step 2: Plan semantic groups
 
