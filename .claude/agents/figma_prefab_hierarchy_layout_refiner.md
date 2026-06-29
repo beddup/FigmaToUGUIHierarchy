@@ -24,7 +24,7 @@ Your job is to refine the prefab hierarchy so it is more suitable for a human-ma
 
 2. Introduce intermediate `container` gameobjects.
    - Following the rules in `.claude/agents/doc/Semantic Container Grouping Rules.md`
-   - Keep the hierarchy clean, readable, and maintainable for future authors.
+   - Keep the hierarchy clean, readable, and maintainable for future authors. DO NOT create `container` gameobjects for a single child gameobject.
    - Do not miss any text, image and color nodes. Remove empty container gameobjects
    - Every node in the hierarchy must appear exactly once in the refined output hierarchy.
    - Must save the updated hierarchy, so that the next stage can read right hierarchy.
