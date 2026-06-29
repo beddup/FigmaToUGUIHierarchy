@@ -4,11 +4,12 @@ Fetch figma design content and its screenshot.
 
 Usage:
   # Get node metadata only (no files saved, outputs JSON to stdout)
-  python fetch_figma_content.py --name-only <figma_url> <figma_token> [output_dir]
+  python fetch_figma_content.py --name-only <figma_url> [output_dir]
 
   # Fetch content and screenshot to explicit paths (no stdout output)
-  python fetch_figma_content.py <figma_url> <figma_token> --raw-output <path> --screenshot-output <path>
+  python fetch_figma_content.py <figma_url> --raw-output <path> --screenshot-output <path>
 
+The Figma API token is read from FIGMA_API_TOKEN.
 All progress/log messages go to stderr.
 """
 
@@ -116,18 +117,26 @@ def sanitize_filename_component(s, max_len=100):
 
 # --- Main ---
 
+def get_figma_token():
+    token = os.environ.get("FIGMA_API_TOKEN")
+    if not token:
+        print("Error: FIGMA_API_TOKEN environment variable is not set.", file=sys.stderr)
+        sys.exit(1)
+    return token
+
+
 def main():
     name_only = '--name-only' in sys.argv
+    figma_token = get_figma_token()
 
     if name_only:
         # ── --name-only mode: just get node metadata, no files ──
         argv = [a for a in sys.argv[1:] if a != '--name-only']
-        if len(argv) < 2:
-            print("Usage: python fetch_figma_content.py --name-only <figma_url> <figma_token> [output_dir]", file=sys.stderr)
+        if len(argv) < 1:
+            print("Usage: python fetch_figma_content.py --name-only <figma_url> [output_dir]", file=sys.stderr)
             sys.exit(1)
         figma_url = argv[0]
-        figma_token = argv[1]
-        output_dir = argv[2] if len(argv) >= 3 else "Library/FigmaToUGUI"
+        output_dir = argv[1] if len(argv) >= 2 else "Library/FigmaToUGUI"
 
         file_key, node_id = parse_figma_url(figma_url)
         if not file_key or not node_id:
@@ -169,7 +178,7 @@ def main():
     parse_mode = '--raw-output' in sys.argv and '--screenshot-output' in sys.argv
     if not parse_mode:
         print("Error: --raw-output and --screenshot-output are required", file=sys.stderr)
-        print("Usage: python fetch_figma_content.py <figma_url> <figma_token> --raw-output <path> --screenshot-output <path>", file=sys.stderr)
+        print("Usage: python fetch_figma_content.py <figma_url> --raw-output <path> --screenshot-output <path>", file=sys.stderr)
         sys.exit(1)
 
     # Parse arguments
@@ -189,12 +198,11 @@ def main():
             positional.append(a)
             i += 1
 
-    if len(positional) < 2:
-        print("Usage: python fetch_figma_content.py <figma_url> <figma_token> --raw-output <path> --screenshot-output <path>", file=sys.stderr)
+    if len(positional) < 1:
+        print("Usage: python fetch_figma_content.py <figma_url> --raw-output <path> --screenshot-output <path>", file=sys.stderr)
         sys.exit(1)
 
     figma_url = positional[0]
-    figma_token = positional[1]
 
     # Parse URL
     file_key, node_id = parse_figma_url(figma_url)

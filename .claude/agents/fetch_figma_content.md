@@ -5,8 +5,9 @@ tools: Glob, Grep, Read, WebFetch, WebSearch, Edit, Write, Bash, Skill
 model: inherit
 color: green
 ---
-
-You are given a figma content url and a figma token.
+You are given a figma content url.
+The fetch script reads the Figma API token from the `FIGMA_API_TOKEN` environment variable.
+Do not pass, print, or include the token in any output.
 
 Follow this two-phase approach: first discover the node identity, then fetch content to pre-defined paths.
 
@@ -15,7 +16,7 @@ Follow this two-phase approach: first discover the node identity, then fetch con
 Call the python script with `--name-only` to get the node metadata:
 
 ```bash
-python3 .claude/agents/scripts/fetch_figma_content.py --name-only <figma_url> <figma_token>
+python3 .claude/agents/scripts/fetch_figma_content.py --name-only <figma_url>
 ```
 
 The stdout is a JSON object:
@@ -40,9 +41,7 @@ Pre-define the exact output paths. File names are simple and deterministic (the 
 Call the fetch script with explicit output paths:
 
 ```bash
-python3 .claude/agents/scripts/fetch_figma_content.py <figma_url> <figma_token> \
-  --raw-output <raw_content_path> \
-  --screenshot-output <content_screen_path>
+python3 .claude/agents/scripts/fetch_figma_content.py <figma_url> --raw-output <raw_content_path> --screenshot-output <content_screen_path>
 ```
 
 Exits 0 on success, non-zero on failure (error details on stderr).
@@ -63,7 +62,6 @@ All paths are pre-defined. Combine them with the metadata from Phase 1. The fina
 {
   "figma_url": "<the input figma url>",
   "file_key": "<from phase 1>",
-  "api_token": "<the input figma token>",
   "node_id": "<from phase 1>",
   "node_name": "<from phase 1>",
   "working_dir_path":"working_dir_path from Phase 1",

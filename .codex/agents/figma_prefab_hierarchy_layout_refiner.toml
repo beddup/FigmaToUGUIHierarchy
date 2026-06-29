@@ -65,7 +65,7 @@ For a container, choose the alignment based on the container's overall visual re
 For a root screen node, use `horizontal_alignment = center` and `vertical_alignment = center`.
 For full-screen backgrounds, use `horizontal_alignment = center` and `vertical_alignment = center` unless the screenshot clearly shows edge-specific anchoring.
    
-## Validate the final JSON against `.claude/agents/examples/prefab_hierarchy_schema.json`.
+## Validate the final JSON against `.codex/agents/examples/prefab_hierarchy_schema.json`.
 
 # Output
 

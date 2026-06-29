@@ -29,15 +29,15 @@ You get JSON:
 {
   "needs_split": true,
   "input_nodes": 279,
-  "max_nodes_before_split": 200,
-  "target_subtree_nodes": 100,
-  "preferred_subtree_node_range": [60, 140],
-  "soft_max_subtree_nodes": 160,
+  "max_nodes_before_split": 160,
+  "target_subtree_nodes": 80,
+  "preferred_subtree_node_range": [60, 120],
+  "soft_max_subtree_nodes": 140,
   "subtrees": []
 }
 ```
 
-**If `needs_split` is `false`, return the `subtrees` value and stop.** No further work needed.
+**If `needs_split` is `false`, return a JSON object exactly in the final output format using the `subtrees` array from the check result, and stop.** No further work needed.
 
 ## Step 2: Plan semantic groups
 
@@ -59,8 +59,13 @@ Prefer groups that match Unity prefab responsibilities and visual design intent.
 - Reusable repeated structures grouped with template-aware semantics while still covering every instance node.
 - State-specific content represented separately when it changes visibility or behavior as a unit.
 - Interactive controls kept together with their labels, icons, and visual states.
-- Decorative or background layers separated when they would distract from structural UI.
-- Keep the total number of groups between 2 and 6.
+- Decorative or background layers separated when they would distract from structural UI. Prefer a `BaseLayer`, `Background`, or `Decorations` group for large backgrounds, masks, pure ornaments, glows, texture layers, and other low-semantic visual material.
+- Keep interactive or content-bearing regions separate from background/decorative groups whenever the source structure allows it.
+
+Choose the group count dynamically from the total source node count:
+- 161-220 source nodes: prefer 2-3 groups.
+- 221-360 source nodes: prefer 3-5 groups.
+- More than 360 source nodes: prefer 5-8 groups, and use more only when required to keep semantic units intact and subtree sizes reasonable.
 
 ### Rules
 
@@ -86,12 +91,13 @@ Prefer groups that match Unity prefab responsibilities and visual design intent.
    Group A: nodeIds = ["4590:9922"]
    Group B: nodeIds = ["4590:9923"]   ← descendant of 4590:9922, plan rejected
    ```
-   
+
    Resolve by raising the narrower group's boundary to a sibling level, or merging the groups.
 3. Preserve semantic atomicity. If a parent node and its descendants form one perceived UI unit, control, card, panel, row, badge, row item, or visual element, prefer selecting the complete parent node as the semantic subtree boundary instead of selecting only some descendants.
 4. Do not split INSTANCE or COMPONENT internals; select the INSTANCE or COMPONENT node as a whole.
 5. Preserve semantic cohesion: one perceived control or visual unit should stay in one group.
-6. Keep groups balanced in source-node coverage. Estimate the total source nodes covered by each group's boundary nodes (using `subtreeEndIndex - index + 1` for each boundary node, then sum). Prefer 60-100 source nodes per group, avoid groups that are too small or too large relative to the target.
+6. Do not split these atomic UI units across groups: button + label + icon + state visuals; list/grid item; tab/nav item; badge + text; avatar + frame + decoration; modal/panel background pieces that form one panel image; progress bar track + fill + label.
+7. Keep groups balanced in source-node coverage. Estimate the total source nodes covered by each group's boundary nodes (using `subtreeEndIndex - index + 1` for each boundary node, then sum). Prefer 60-120 source nodes per group, target about 80 nodes, and avoid exceeding 140 source nodes unless a larger semantic unit would be damaged by splitting.
 
 ### Plan JSON format
 
@@ -113,9 +119,7 @@ Prefer groups that match Unity prefab responsibilities and visual design intent.
 Analyze the plan before creating any subtree files:
 
 ```bash
-python3 .claude/agents/scripts/semantic_divide_figma_tree.py analyze-plan \
-  <simplified_content_path> <working_dir_path>/semantic_plan.json \
-  -o <working_dir_path>/semantic_plan_analysis.json
+python3 .claude/agents/scripts/semantic_divide_figma_tree.py analyze-plan <simplified_content_path> <working_dir_path>/semantic_plan.json -o <working_dir_path>/semantic_plan_analysis.json
 ```
 
 This validates both **disjointness** (no ancestor/descendant boundary pairs across groups) and **coverage** (every node is reachable). Output:
@@ -158,9 +162,7 @@ Re-run `analyze-plan` and Repeat until `planValidation.valid` is `true`.
 Once Step 3 produces a valid plan, extract the subtree files:
 
 ```bash
-python3 .claude/agents/scripts/semantic_divide_figma_tree.py apply-plan \
-  <simplified_content_path> <working_dir_path>/semantic_plan.json \
-  --output-dir <working_dir_path>
+python3 .claude/agents/scripts/semantic_divide_figma_tree.py apply-plan <simplified_content_path> <working_dir_path>/semantic_plan.json --output-dir <working_dir_path>
 ```
 
 `apply-plan` rejects invalid plans — it will not create subtree files if overlaps or uncovered nodes remain.
