@@ -6,17 +6,17 @@ allowed-tools: Read, Grep, Glob, Write, Bash, Edit, Skill
 
 You are provided a Figma content URL.
 
-Resolve the Figma API token before starting:
+Ensure the Figma API token is available before starting:
 
 1. Use the `FIGMA_API_TOKEN` environment variable when it is available.
-2. If `FIGMA_API_TOKEN` is not set, ask the user to provide a token.
-3. Never read a token from repository files or hard-code it in commands, prompts, or configuration.
+2. If `FIGMA_API_TOKEN` is not set, ask the user to set it in the environment before continuing.
+3. Never read a token from repository files or hard-code it in commands, prompts, subagent inputs, or configuration.
 
 Follow the steps to create unity prefab hierarchy.
 
 ## Step 1 : get the figma content
 
-start a subagent `fetch_figma_content`, pass the figma content URL and the resolved API token to it.
+start a subagent `fetch_figma_content`, pass only the figma content URL to it. The subagent's fetch script reads `FIGMA_API_TOKEN` from the environment.
 
 we will get a json data
 
@@ -24,7 +24,6 @@ we will get a json data
 {
   "figma_url":"the input figma url",
   "file_key": "<figma_file_key>",
-  "api_token": "<the resolved FIGMA_API_TOKEN or user-provided token>",
   "node_id": "<node_id>",
   "node_name": "<node_name>", 
   "working_dir_path": "<working_dir_path>",
@@ -108,7 +107,6 @@ The content is
 {
   "figma_url":"figma_url from Step 1",
   "file_key": "file_key from Step 1", 
-  "api_token":"api_token from Step 1",
   "node_id": "node_id from Step 1",
   "node_name": "node_name from Step 1",
   "summary":"a short description about the figma content, under 50 words",
