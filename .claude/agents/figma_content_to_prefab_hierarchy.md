@@ -103,6 +103,7 @@ walk through the flatNodes array in DFS order, for each node, find where it is i
   2. otherwise, its category is `container`
 - for an `image` category gameobject, any descendant node in its subtree range `[index+1, subtreeEndIndex]` MUST NOT become a separate gameobject.
 - if a node and its descendants together represent a single design element, create an `image` category gameobject for it, and skip all nodes in its subtree range `[index+1, subtreeEndIndex]`
+- Do not flatten real UI text into an `image` gameobject when that text should remain editable or localizable in Unity. If a subtree contains TEXT nodes that represent runtime UI copy, labels, button text, titles, values, descriptions, list item text, or other localized strings, preserve those TEXT nodes as `text` category gameobjects instead of swallowing them inside a parent image.
 
 Review your gameobjects:
 - make sure all gameobject are all independent, meaningful and reusable UI element
@@ -126,9 +127,6 @@ When `gameObjectCategory` is `image`, you **MUST** set the `image_type` field to
 
 This field is **only required** for `image` category gameobjects. Do NOT set it for `text`, `color`, or `container` categories.
 
-## `horizontal_alignment` and `vertical_alignment`
-- Set as "center". A later stage will handle it
-
 ## `gameObjectName`
 
 - Use PascalCase for gameObject names
@@ -137,6 +135,14 @@ This field is **only required** for `image` category gameobjects. Do NOT set it 
 ## `isButton`
 
 Whether the gameobject should be interactive element.
+
+## `horizontal_alignment` and `vertical_alignment`
+- Set as "center". A later stage will handle it
+
+## Text runtime layout fields: `text_rect` and `text_alignment`
+- Set `text_rect` with  `{"x": 0, "y": 0,"width": 0,"height": 0}`
+- Set `text_alignment` with `{"horizontal": "center", "vertical": "middle"}`
+- A later stage will handle it
 
 ## Common Patterns in hierarchy:
 

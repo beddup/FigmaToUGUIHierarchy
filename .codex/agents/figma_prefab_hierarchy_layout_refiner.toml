@@ -65,6 +65,59 @@ For a container, choose the alignment based on the container's overall visual re
 For a root screen node, use `horizontal_alignment = center` and `vertical_alignment = center`.
 For full-screen backgrounds, use `horizontal_alignment = center` and `vertical_alignment = center` unless the screenshot clearly shows edge-specific anchoring.
    
+
+## Infer runtime text layout
+
+For every GameObject whose `gameObjectCategory` is `text`, add both `text_rect` and `text_alignment`.
+
+Figma text node bounds often describe only the current demo copy's tight visual bounding box. Do not blindly use the original text node `bounds` as the Unity runtime text display area. 
+Infer a practical runtime text rectangle that can support localization and longer strings while preserving the screenshot's design intent.
+
+### `text_rect`
+
+`text_rect` is the inferred runtime text display rectangle:
+
+```json
+"text_rect": {
+  "x": 120,
+  "y": 340,
+  "width": 520,
+  "height": 72
+}
+```
+
+Rules:
+- Use the same global coordinate space and units as the simplified Figma `flatNodes[].bounds` field.
+- `text_rect` is NOT relative to the refined hierarchy parent GameObject. Refined hierarchy may introduce synthetic container GameObjects with no real Figma node or source bounds.
+- `text_rect` may be larger than the source text node's original `bounds`.
+- Use integer values.
+- Keep the inferred rectangle inside the relevant visual/semantic container whenever that container can be identified from Figma bounds and screenshot.
+- Do not expand text over sibling icons, buttons, avatars, badges, price columns, or other visible elements that occupy layout space.
+
+### `text_alignment`
+
+`text_alignment` is the inferred text rendering alignment:
+
+```json
+"text_alignment": {
+  "horizontal": "center",
+  "vertical": "middle"
+}
+```
+
+Allowed values:
+- `horizontal`: `left`, `center`, `right`
+- `vertical`: `top`, `middle`, `bottom`
+
+Inference guidance:
+- Button text usually uses the button/background's inner usable area and `center` / `middle` alignment.
+- Title text usually uses the available title/header/panel-title region and aligns according to the visual intent, commonly `center` / `middle` or `left` / `middle`.
+- List/card item text should use the available area inside the item after excluding avatars, icons, buttons, and fixed-value columns.
+- Description/body text should prefer a wider readable area and usually uses `left` horizontal alignment.
+- Numeric values, rankings, prices, and fixed columns may use tighter rectangles and `right` or `center` alignment when that matches the visual column.
+- Short badges, symbols, and decorative fixed labels should not be expanded excessively.
+- When the Figma text alignment metadata conflicts with visual/semantic evidence, prefer the inferred runtime intent from layout, parent region, sibling spacing, and screenshot.
+   
 ## Validate the final JSON against `.codex/agents/examples/prefab_hierarchy_schema.json`.
 
 # Output

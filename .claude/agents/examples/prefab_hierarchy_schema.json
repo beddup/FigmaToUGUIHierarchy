@@ -66,6 +66,48 @@
       "enum": ["simple", "sliced", "tiled"],
       "description": "Image fill type. Required when gameObjectCategory is 'image'. simple: basic fill, sliced: 9-slice, tiled: tiled fill"
     },
+    "text_rect": {
+      "type": "object",
+      "description": "Inferred runtime text display rectangle in the same global coordinate space as simplified Figma flatNodes[].bounds. Required when gameObjectCategory is 'text'.",
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "description": "Global Figma-space x coordinate of the inferred text display rectangle"
+        },
+        "y": {
+          "type": "integer",
+          "description": "Global Figma-space y coordinate of the inferred text display rectangle"
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Inferred runtime text display width"
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Inferred runtime text display height"
+        }
+      },
+      "additionalProperties": false
+    },
+    "text_alignment": {
+      "type": "object",
+      "description": "Inferred text rendering alignment. Required when gameObjectCategory is 'text'.",
+      "required": ["horizontal", "vertical"],
+      "properties": {
+        "horizontal": {
+          "type": "string",
+          "enum": ["left", "center", "right"]
+        },
+        "vertical": {
+          "type": "string",
+          "enum": ["top", "middle", "bottom"]
+        }
+      },
+      "additionalProperties": false
+    },
     "children": {
       "type": "array",
       "description": "Child GameObjects in the hierarchy",
@@ -74,15 +116,30 @@
       }
     }
   },
-  "if": {
-    "properties": {
-      "gameObjectCategory": { "const": "image" }
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "gameObjectCategory": { "const": "image" }
+        },
+        "required": ["gameObjectCategory"]
+      },
+      "then": {
+        "required": ["image_type"]
+      }
     },
-    "required": ["gameObjectCategory"]
-  },
-  "then": {
-    "required": ["image_type"]
-  },
+    {
+      "if": {
+        "properties": {
+          "gameObjectCategory": { "const": "text" }
+        },
+        "required": ["gameObjectCategory"]
+      },
+      "then": {
+        "required": ["text_rect", "text_alignment"]
+      }
+    }
+  ],
   "definitions": {},
   "examples": [
     {
@@ -95,14 +152,23 @@
       "vertical_alignment": "center",
       "children": [
         {
-          "nodeId": "4590:9920",
-          "nodeName": "Background",
-          "gameObjectCategory": "image",
-          "gameObjectName": "Background",
+          "nodeId": "4590:9921",
+          "nodeName": "Title",
+          "gameObjectCategory": "text",
+          "gameObjectName": "TitleText",
           "isButton": false,
-          "image_type": "simple",
           "horizontal_alignment": "center",
-          "vertical_alignment": "center",
+          "vertical_alignment": "top",
+          "text_rect": {
+            "x": 240,
+            "y": 120,
+            "width": 600,
+            "height": 64
+          },
+          "text_alignment": {
+            "horizontal": "center",
+            "vertical": "middle"
+          },
           "children": []
         }
       ]
