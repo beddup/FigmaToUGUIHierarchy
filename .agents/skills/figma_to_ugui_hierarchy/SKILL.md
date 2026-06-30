@@ -9,8 +9,7 @@ You are provided a Figma content URL.
 Ensure the Figma API token is available before starting:
 
 1. Use the `FIGMA_API_TOKEN` environment variable when it is available.
-2. If `FIGMA_API_TOKEN` is not set, ask the user to set it in the environment before continuing.
-3. Never read a token from repository files or hard-code it in commands, prompts, subagent inputs, or configuration.
+2. If `FIGMA_API_TOKEN` is not set, ask the user to provide it before continuing.
 
 Follow the steps to create unity prefab hierarchy.
 

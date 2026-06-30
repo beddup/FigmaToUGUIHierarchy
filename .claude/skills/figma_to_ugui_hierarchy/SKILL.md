@@ -9,8 +9,7 @@ You are provided a Figma content URL.
 Ensure the Figma API token is available before starting:
 
 1. Use the `FIGMA_API_TOKEN` environment variable when it is available.
-2. If `FIGMA_API_TOKEN` is not set, ask the user to set it in the environment before continuing.
-3. Never read a token from repository files or hard-code it in commands, prompts, subagent inputs, or configuration.
+2. If `FIGMA_API_TOKEN` is not set, ask the user to provide it before continuing.
 
 Follow the steps to create unity prefab hierarchy.
 
@@ -68,10 +67,10 @@ when you get all the node subtree prefab hierarchy, you go to step 4
 
 Now you have all the subtree prefab hierarchy, you combine them into a large and complete one, which matches the whole figma content.
 
-run the python script `.claude/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py` from the project root to combine multiple prefab hierarchy files:
+run the python script `.agents/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py` from the project root to combine multiple prefab hierarchy files:
 
 ```bash
-python3 .claude/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py \
+python3 .agents/skills/figma_to_ugui_hierarchy/scripts/combine_hierarchy.py \
   <hierarchy_file_1.json> <hierarchy_file_2.json> ... \
   -f <simplified_content_path> \
   -o "<working_dir_path>/prefab_hierarchy_combined.json"
@@ -89,7 +88,7 @@ Start a subagent `figma_prefab_hierarchy_layout_refiner`, pass:
 - `simplified_content_path` from Step 1
 - `content_screen_path` from Step 1
 - the combined `prefab_hierarchy_path` from Step 4
-- working directory path (`working_dir_path`) from step 1 
+- working directory path (`working_dir_path`) from step 1
 
 The subagent refines the combined hierarchy for Unity prefab authoring, including child order, responsive layout alignment metadata, and meaningful root naming.
 
@@ -106,7 +105,7 @@ The content is
 ```json
 {
   "figma_url":"figma_url from Step 1",
-  "file_key": "file_key from Step 1", 
+  "file_key": "file_key from Step 1",
   "node_id": "node_id from Step 1",
   "node_name": "node_name from Step 1",
   "summary":"a short description about the figma content, under 50 words",
