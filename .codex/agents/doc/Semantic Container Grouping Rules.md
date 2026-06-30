@@ -11,6 +11,8 @@ For any set of sibling children that share a common semantic purpose, spatial re
 The container becomes a direct child of the original parent, and the grouped children become its children, preserving their relative order.
 When Figma hierarchy, naming, or bounds do not make the relationship clear, inspect the screenshot and infer how the visible UI would be perceived by a user. The screenshot is the tie-breaker for deciding whether nearby elements belong to the same semantic group.
 
+Do not keep synthetic grouping containers with only one child. A synthetic container is useful only when it groups multiple related children. If a synthetic container ends up with exactly one child, remove the synthetic container and promote its child to the original parent. Repeat this cleanup until no single-child synthetic containers remain.
+
 ### Spatial region patterns
 
 - **Top region**: controls, titles, indicators, or decorative elements anchored to the top edge of the screen or parent → group into a top-bar container.
@@ -25,22 +27,36 @@ When Figma hierarchy, naming, or bounds do not make the relationship clear, insp
 - **Interactive cluster**: a button and its adjacent supplementary controls that form one interactive region.
 - **Visibility or state unit**: elements that show, hide, or change together as a group.
 
-### Repeated composite units in flat Figma trees
+### Functional areas inside complex modules
 
-A repeated composite unit may be present even when the original Figma tree is flat. Do not rely only on existing Figma parent groups. Use spatial and semantic evidence to group siblings that together represent one repeated item, slot, step, tab, cell, badge/value pair, or logical state.
+A complex module may need internal functional grouping even when the original Figma tree is flat or only partially grouped. Do not rely only on existing Figma parent groups. Use spatial and semantic evidence to group siblings that together represent one functional area, information unit, visual state, row column, card section, control cluster, or repeated item.
+
+In this context, a complex module is a single perceived UI unit that contains several different responsibilities inside it. It is not just a broad screen region, and it is not a simple leaf visual. 
+
+A container likely represents a complex module when several of these signals are present:
+
+- It has many direct children, especially 6 or more non-container renderable children.
+- It contains a background or frame plus multiple foreground elements.
+- It mixes different semantic roles such as image, text, icon, badge, value, decoration, and state indicator.
+- It has multiple spatial zones or columns inside one perceived unit.
+- It contains more than one information unit, such as identity plus score, reward plus value, title plus status, or icon plus label plus action.
+- Its direct children would be awkward for a Unity author to scan, select, animate, hide, or update as one flat list.
+
+If a container has many direct children, actively look for meaningful subgroups that would make the Unity prefab easier to author and maintain. A good grouping should reflect how a user or UI developer understands the module, not merely how Figma happened to store the layers.
 
 Common evidence includes:
 
 - Multiple sibling elements with similar size, shape, naming pattern, spacing, or alignment.
-- Nearby labels, icons, badges, shadows, highlights, or state visuals whose centers fall inside or close to a repeated visual element.
-- Text values or labels that correspond one-to-one with repeated backgrounds, slots, tabs, steps, cards, rows, or cells.
-- A selected, active, disabled, locked, completed, or highlighted state visual that belongs to one repeated item.
+- Nearby labels, icons, badges, shadows, highlights, or state visuals that visually attach to the same area.
+- Text values or labels that correspond to a specific background, slot, tab, step, card section, row column, or cell.
+- A selected, active, disabled, locked, completed, or highlighted state visual that belongs to one logical unit.
+- Functional columns or sections such as rank, identity, avatar/name, reward, score, action, title, description, status, and controls.
 
-When a parent contains repeated visual elements and corresponding text/icon/state siblings, wrap each logical item into a synthetic `container`. Each item container should contain all visual and textual elements that describe that item, while preserving the required render order inside the item.
+When a parent contains visual elements and corresponding text/icon/state siblings, wrap each logical area into a synthetic `container`. Each area container should contain all visual and textual elements that describe that area, while preserving the required render order inside the area.
 
-If the one-to-one mapping is ambiguous from node names or bounds alone, use the screenshot to understand which text, icon, highlight, shadow, badge, or state visual is visually attached to which repeated item.
+If the mapping is ambiguous from node names or bounds alone, use the screenshot to understand which text, icon, highlight, shadow, badge, or state visual is visually attached to which functional area.
 
-Do not leave a parent with separate flat groups like all backgrounds first and all labels later when those children actually form repeated composite items.
+Do not leave a complex module as a long flat list of backgrounds, icons, labels, values, badges, and state visuals when those children actually form smaller functional areas.
 
 ### Container nodeId convention
 

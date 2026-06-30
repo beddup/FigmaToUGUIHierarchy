@@ -32,6 +32,12 @@ Important workflow ordering:
    - Every node in the hierarchy must appear exactly once in the refined output hierarchy.
    - Must save the updated hierarchy, so that the next stage can read right hierarchy.
 
+3. Before continuing, audit the hierarchy and remove invalid synthetic containers:
+   - Remove any synthetic `container` GameObject with exactly one child by promoting that child to the synthetic container's parent.
+   - A synthetic container is one whose `nodeId` was derived for grouping, such as `<parentNodeId>:group_<GameObjectName>`, and does not correspond to a real Figma node.
+   - Do not remove a real Figma container node, even if it currently has one child.
+   - Re-check after promotion because removing one synthetic container can create another single-child synthetic container at the parent level.
+
 ## Give the root GameObject a meaningful `gameObjectName` that expresses the whole screen or prefab content.
 - PascalCase English names that summarize the design intent.
 
@@ -92,6 +98,9 @@ Rules:
 - Keep the inferred rectangle inside the relevant visual/semantic container whenever that container can be identified from Figma bounds and screenshot.
 - Do not expand text over sibling icons, buttons, avatars, badges, price columns, or other visible elements that occupy layout space.
 - For row/list item text, infer the available text column from neighboring sibling bounds. The text column must avoid left-side visual siblings such as rank labels, avatars, icons, and badges, and right-side visual siblings such as score pills, buttons, prices, and rewards.
+- Do not expand `text_rect` to the full parent image, button, tab, badge, or pill bounds by default. For short fixed labels, button labels, badges, counters, compact values, and decorative labels, keep `text_rect` close to the original Figma text bounds with only modest padding.
+- A text rectangle must stay inside the parent visual's inner usable area, not merely inside the parent outer bounds. If the parent is a button or framed image, leave visual padding from the button/frame edges unless the screenshot clearly shows full-width text layout.
+- For centered button labels, preserve the source text center and prefer a compact rectangle around the text. Use the full button width only when the design clearly needs a long, localizable phrase or multiline label.
 
 ### `text_alignment`
 
