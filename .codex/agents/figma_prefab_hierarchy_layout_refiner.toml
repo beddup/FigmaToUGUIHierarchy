@@ -16,6 +16,11 @@ Your job is to refine the prefab hierarchy so it is more suitable for a human-ma
 
 # Workflow
 
+Important workflow ordering:
+- First complete semantic hierarchy refinement: introduce all needed containers, root naming, alignment inference, and text layout inference.
+- Only after the hierarchy structure and text layout are complete, run the overlap computation and perform the final child reordering.
+- Do not use possible render-order concerns as a reason to skip semantic grouping. Container introduction is a semantic organization step; render order is resolved in the final child-reordering step.
+
 ## Refine the hierarchy
 
 1. Read the simplified Figma content JSON, the screenshot, and the prefab hierarchy JSON. Well understand the design semantically, logically and spatially to understand its function, interaction, visual stacking, screen adaptation intent, etc.
@@ -26,22 +31,6 @@ Your job is to refine the prefab hierarchy so it is more suitable for a human-ma
    - Do not miss any text, image and color nodes. Remove empty container gameobjects
    - Every node in the hierarchy must appear exactly once in the refined output hierarchy.
    - Must save the updated hierarchy, so that the next stage can read right hierarchy.
-
-## Re-order gameobject children
-
-We need reorder gameobject children so that it matches human's thought habit. But we CAN NOT mess the render order. Its rendering reult must be the same with Figma.
-We first need to run the overlap computation script to identify which sibling pairs have rendering overlap:
-
-   ```bash
-   python3 .codex/agents/scripts/compute_rendering_overlaps.py \
-     <prefab_hierarchy_path> \
-     -f <simplified_content_path> \
-     -o <working_dir_path>/prefab_hierarchy_combined_overlaps.json
-   ```
-Reorder every GameObject's `children` array:
-- Follow the rules at `.codex/agents/doc/gameobject_reorder_rules.md`.
-- MUST respect the overlap constraints in the above overlap report (overlapped sibling pairs **must** preserve their oder)    
-- Preserve all existing children,
 
 ## Give the root GameObject a meaningful `gameObjectName` that expresses the whole screen or prefab content.
 - PascalCase English names that summarize the design intent.
@@ -73,6 +62,10 @@ For every GameObject whose `gameObjectCategory` is `text`, add both `text_rect` 
 Figma text node bounds often describe only the current demo copy's tight visual bounding box. Do not blindly use the original text node `bounds` as the Unity runtime text display area. 
 Infer a practical runtime text rectangle that can support localization and longer strings while preserving the screenshot's design intent.
 
+**Primary invariant:** 
+- The inferred `text_rect` plus `text_alignment` must reproduce the current Figma text's visual position when rendering the original Figma text content. Runtime flexibility is secondary. 
+- You may enlarge a text rectangle for localization, but the current source text must not visibly drift away from its Figma position.
+
 ### `text_rect`
 
 `text_rect` is the inferred runtime text display rectangle:
@@ -90,9 +83,15 @@ Rules:
 - Use the same global coordinate space and units as the simplified Figma `flatNodes[].bounds` field.
 - `text_rect` is NOT relative to the refined hierarchy parent GameObject. Refined hierarchy may introduce synthetic container GameObjects with no real Figma node or source bounds.
 - `text_rect` may be larger than the source text node's original `bounds`.
+- Enlarging `text_rect` must preserve the rendered position of the current Figma text:
+  - For left-aligned text, preserve the original text left edge. `text_rect.x` should normally equal the source text bounds `x`; grow width to the right when there is room.
+  - For center-aligned text, preserve the original text center. The inferred `text_rect` center should match the source text bounds center.
+  - For right-aligned text, preserve the original text right edge. The inferred `text_rect` right edge should match the source text bounds right edge; grow width to the left when there is room.
+  - If a larger rectangle would move the current text visually, keep the original Figma text bounds or choose an alignment that preserves the original rendered position.
 - Use integer values.
 - Keep the inferred rectangle inside the relevant visual/semantic container whenever that container can be identified from Figma bounds and screenshot.
 - Do not expand text over sibling icons, buttons, avatars, badges, price columns, or other visible elements that occupy layout space.
+- For row/list item text, infer the available text column from neighboring sibling bounds. The text column must avoid left-side visual siblings such as rank labels, avatars, icons, and badges, and right-side visual siblings such as score pills, buttons, prices, and rewards.
 
 ### `text_alignment`
 
@@ -117,6 +116,26 @@ Inference guidance:
 - Numeric values, rankings, prices, and fixed columns may use tighter rectangles and `right` or `center` alignment when that matches the visual column.
 - Short badges, symbols, and decorative fixed labels should not be expanded excessively.
 - When the Figma text alignment metadata conflicts with visual/semantic evidence, prefer the inferred runtime intent from layout, parent region, sibling spacing, and screenshot.
+- After choosing `text_alignment`, re-check the primary invariant: rendering the original Figma text inside the inferred `text_rect` with this alignment must still match the original Figma visual position. If it does not, revise the rectangle or alignment before saving.
+
+## Final child reorder
+
+After semantic containers, root naming, alignment metadata, and text layout are complete, reorder gameobject children so that the hierarchy matches human authoring habits while preserving the Figma render result.
+
+Run the overlap computation script on the updated hierarchy to identify which sibling pairs have rendering overlap:
+
+   ```bash
+   python3 .codex/agents/scripts/compute_rendering_overlaps.py \
+     <updated_prefab_hierarchy_path> \
+     -f <simplified_content_path> \
+     -o <working_dir_path>/prefab_hierarchy_final_overlaps.json
+   ```
+
+Reorder every GameObject's `children` array:
+- Follow the rules at `.codex/agents/doc/gameobject_reorder_rules.md`.
+- MUST respect the overlap constraints in the final overlap report. Overlapped sibling pairs must preserve their relative render order.
+- Preserve every existing child exactly once.
+- Do not remove semantic containers created earlier. Only adjust sibling order where it is safe.
    
 ## Validate the final JSON against `.codex/agents/examples/prefab_hierarchy_schema.json`.
 
