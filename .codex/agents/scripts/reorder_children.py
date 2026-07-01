@@ -59,10 +59,14 @@ def build_figma_index(flat_nodes: List[Dict]) -> Dict[str, Dict]:
 # Visual area collection
 #
 # Each visual area is a dict:
-#   {'bounds': {'x','y','width','height'}, 'siblingIndex': int | None}
+#   {
+#       'bounds': {'x','y','width','height'},
+#       'parentId': str | None,
+#       'siblingIndex': int | None
+#   }
 #
-# siblingIndex is the figma siblingIndex of the specific flatNodes entry
-# that produced the bounds. It may be None for some edge cases (very rare).
+# parentId and siblingIndex refer to the specific flatNodes entry that produced
+# the bounds.  siblingIndex values are only comparable when parentId matches.
 # ---------------------------------------------------------------------------
 
 def collect_visual_areas_from_figma_subtree(
@@ -88,12 +92,13 @@ def collect_visual_areas_from_figma_subtree(
         bounds = n.get('bounds')
         if not bounds:
             continue
+        parent_id = n.get('parentId')
         si = n.get('siblingIndex')
 
         if n.get('type') == 'TEXT' and n.get('text'):
-            areas.append({'bounds': bounds, 'siblingIndex': si})
+            areas.append({'bounds': bounds, 'parentId': parent_id, 'siblingIndex': si})
         elif n.get('fills') and len(n['fills']) > 0:
-            areas.append({'bounds': bounds, 'siblingIndex': si})
+            areas.append({'bounds': bounds, 'parentId': parent_id, 'siblingIndex': si})
 
     return areas
 
@@ -116,22 +121,40 @@ def collect_visual_areas(
     """
     node_id = hierarchy_node.get('nodeId', '')
     hierarchy_children = hierarchy_node.get('children', [])
+    areas: List[Dict] = []
+
+    if node_id and node_id in figma_index:
+        fm = figma_index[node_id]
+        bounds = fm.get('bounds')
+        if bounds and hierarchy_node.get('gameObjectCategory') == 'image':
+            areas.append({
+                'bounds': bounds,
+                'parentId': fm.get('parentId'),
+                'siblingIndex': fm.get('siblingIndex'),
+            })
 
     if not hierarchy_children and node_id and node_id in figma_index:
-        return collect_visual_areas_from_figma_subtree(
+        areas.extend(collect_visual_areas_from_figma_subtree(
             node_id, figma_index, flat_nodes
-        )
-
-    areas: List[Dict] = []
+        ))
+        return areas
 
     if node_id and node_id in figma_index:
         fm = figma_index[node_id]
         bounds = fm.get('bounds')
         if bounds:
             if fm.get('type') == 'TEXT' and fm.get('text'):
-                areas.append({'bounds': bounds, 'siblingIndex': fm.get('siblingIndex')})
+                areas.append({
+                    'bounds': bounds,
+                    'parentId': fm.get('parentId'),
+                    'siblingIndex': fm.get('siblingIndex'),
+                })
             elif fm.get('fills') and len(fm['fills']) > 0:
-                areas.append({'bounds': bounds, 'siblingIndex': fm.get('siblingIndex')})
+                areas.append({
+                    'bounds': bounds,
+                    'parentId': fm.get('parentId'),
+                    'siblingIndex': fm.get('siblingIndex'),
+                })
 
     for child in hierarchy_children:
         areas.extend(collect_visual_areas(child, figma_index, flat_nodes))
@@ -178,9 +201,10 @@ def reorder_children(hierarchy: Dict, figma_index: Dict[str, Dict], flat_nodes: 
     Reorder every children array in the hierarchy tree.
 
     Walks the tree depth-first.  For each node with >= 2 children:
-      - Compute visual areas (each tagged with its source figma siblingIndex).
+      - Compute visual areas (each tagged with source figma parentId/siblingIndex).
       - Determine which sibling pairs overlap and, for each overlapping pair,
-        compare the siblingIndex of the *specific* areas that overlap.
+        first compare the direct Figma siblings.  Fall back to specific visual
+        areas only when their parentId values match.
       - Build a dependency graph; topological sort with position-based heap
         priority and deterministic tie-breaking.
     """
@@ -206,6 +230,21 @@ def reorder_children(hierarchy: Dict, figma_index: Dict[str, Dict], flat_nodes: 
             precompute(child)
 
     precompute(hierarchy)
+
+    def figma_relative_direction(node_a: Dict, node_b: Dict) -> Optional[str]:
+        """Return render order between two hierarchy nodes if Figma can compare them."""
+        figma_a = figma_index.get(node_a.get('nodeId', ''))
+        figma_b = figma_index.get(node_b.get('nodeId', ''))
+        if not figma_a or not figma_b:
+            return None
+        if figma_a.get('parentId') != figma_b.get('parentId'):
+            return None
+
+        si_a = figma_a.get('siblingIndex')
+        si_b = figma_b.get('siblingIndex')
+        if si_a is None or si_b is None or si_a == si_b:
+            return None
+        return 'a_before_b' if si_a < si_b else 'b_before_a'
 
     # ------------------------------------------------------------------
     # Reorder children of a single node (recursive)
@@ -253,6 +292,13 @@ def reorder_children(hierarchy: Dict, figma_index: Dict[str, Dict], flat_nodes: 
                         if not rectangles_overlap(a_i['bounds'], a_j['bounds']):
                             continue
                         any_overlap = True
+                        # Area siblingIndex values are local to their Figma
+                        # parent.  Do not compare descendant areas from
+                        # different parents/instances; that produces false
+                        # z-order directions.
+                        if a_i.get('parentId') != a_j.get('parentId'):
+                            continue
+
                         si_i = a_i.get('siblingIndex')
                         si_j = a_j.get('siblingIndex')
 
@@ -262,14 +308,15 @@ def reorder_children(hierarchy: Dict, figma_index: Dict[str, Dict], flat_nodes: 
                             elif si_j < si_i:
                                 directions.add('j_before_i')
                             # equal → no direction from this pair
-                        elif si_i is not None:
-                            directions.add('i_before_j')
-                        elif si_j is not None:
-                            directions.add('j_before_i')
-                            # both None → no direction from this pair
 
                 if not any_overlap:
                     continue  # No overlap → free to reorder
+
+                direct_direction = figma_relative_direction(ci, cj)
+                if direct_direction == 'a_before_b':
+                    directions = {'i_before_j'}
+                elif direct_direction == 'b_before_a':
+                    directions = {'j_before_i'}
 
                 if len(directions) == 1:
                     # All overlapping areas agree on direction
