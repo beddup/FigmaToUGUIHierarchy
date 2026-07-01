@@ -37,8 +37,6 @@ Important workflow ordering:
    python3 .codex/agents/scripts/cleanup_synthetic_containers.py --hierarchy <updated_prefab_hierarchy_path> --figma <simplified_content_path> --output <updated_prefab_hierarchy_path>
    ```
 
-   The script identifies synthetic containers (nodeId contains `:group_` OR nodeId is absent from the Figma content), then iteratively removes empty containers and promotes single-child containers until the tree is stable.
-
 ## Give the root GameObject a meaningful `gameObjectName` that expresses the whole screen or prefab content.
 - PascalCase English names that summarize the design intent.
 
@@ -61,31 +59,24 @@ For a container, choose the alignment based on the container's overall visual re
 For a root screen node, use `horizontal_alignment = center` and `vertical_alignment = center`.
 For full-screen backgrounds, use `horizontal_alignment = center` and `vertical_alignment = center` unless the screenshot clearly shows edge-specific anchoring.
 
-## Final child reorder
+## child reorder
 
-After semantic containers, root naming, and alignment metadata are complete, reorder gameobject children so that the hierarchy matches human authoring habits while preserving the Figma render result.
-
-Run the overlap computation script on the updated hierarchy to identify which sibling pairs have rendering overlap:
+After semantic containers, root naming, and alignment metadata are complete, run the deterministic reorder script to reorder every GameObject's `children` array:
 
    ```bash
-   python3 .codex/agents/scripts/compute_rendering_overlaps.py <updated_prefab_hierarchy_path> -f <simplified_content_path> -o <working_dir_path>/prefab_hierarchy_final_overlaps.json
+   python3 .codex/agents/scripts/reorder_children.py <updated_prefab_hierarchy_path> -f <simplified_content_path> -o <working_dir_path>/<root gameObjectName>_hierarchy.json
    ```
-
-Reorder every GameObject's `children` array:
-- Follow the rules at `.codex/agents/doc/gameobject_reorder_rules.md`.
-- MUST respect the overlap constraints in the final overlap report. Overlapped sibling pairs must preserve their relative render order.
-- Preserve every existing child exactly once.
-- Do not remove semantic containers created earlier. Only adjust sibling order where it is safe.
+Use the reordered file for the remaining steps.
    
 # Output
 
 Before output, validate the saved prefab hierarchy JSON:
 
 ```bash
-python3 .codex/agents/scripts/validate_prefab_hierarchy_schema.py <prefab_hierarchy_json_path>
+python3 .codex/agents/scripts/validate_prefab_hierarchy_schema.py <working_dir_path>/<root gameObjectName>_hierarchy.json
 ```
 
 If validation fails, fix the hierarchy JSON and run the validator again until it passes.
 
-You must save the refined hierarchy to `<working_dir_path>/<root gameObjectName>_hierarchy.json` and output only the refined hierarchy file path.
+output the final result hierarchy file path.
 """
