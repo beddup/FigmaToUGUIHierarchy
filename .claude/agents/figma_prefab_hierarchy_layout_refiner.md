@@ -66,20 +66,13 @@ For a container, choose the alignment based on the container's overall visual re
 For a root screen node, use `horizontal_alignment = center` and `vertical_alignment = center`.
 For full-screen backgrounds, use `horizontal_alignment = center` and `vertical_alignment = center` unless the screenshot clearly shows edge-specific anchoring.
 
-## Final child reorder
+## child reorder
 
 After semantic containers, root naming, and alignment metadata are complete, run the deterministic reorder script to reorder every GameObject's `children` array:
 
    ```bash
-   python3 .claude/agents/scripts/reorder_children.py <updated_prefab_hierarchy_path> -f <simplified_content_path> -o <working_dir_path>/prefab_hierarchy_reordered.json
+   python3 .claude/agents/scripts/reorder_children.py <updated_prefab_hierarchy_path> -f <simplified_content_path> -o <working_dir_path>/<root gameObjectName>_hierarchy.json
    ```
-
-The script applies the rules described in `.claude/agents/doc/gameobject_reorder_rules.md`:
-- Overlapping sibling pairs preserve their Figma relative render order (constrained by effective sibling index).
-- Non-overlapping siblings are sorted by spatial position: X-first (left-to-right) when the parent is wider than tall, Y-first (top-to-bottom) when the parent is taller than or equal to wide.
-- Every child is preserved exactly once. No containers are added or removed.
-- If the script emits warnings for pairs with no derived siblingIndex, review those pairs manually against the screenshot.
-
 Use the reordered file for the remaining steps.
    
 # Output
@@ -87,9 +80,9 @@ Use the reordered file for the remaining steps.
 Before output, validate the saved prefab hierarchy JSON:
 
 ```bash
-python3 .claude/agents/scripts/validate_prefab_hierarchy_schema.py <prefab_hierarchy_json_path>
+python3 .claude/agents/scripts/validate_prefab_hierarchy_schema.py <working_dir_path>/<root gameObjectName>_hierarchy.json
 ```
 
 If validation fails, fix the hierarchy JSON and run the validator again until it passes.
 
-You must save the refined hierarchy to `<working_dir_path>/<root gameObjectName>_hierarchy.json` and output only the refined hierarchy file path.
+output the final result hierarchy file path.
