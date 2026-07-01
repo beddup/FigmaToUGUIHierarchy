@@ -68,13 +68,14 @@ For every GameObject whose `gameObjectCategory` is `text`, add both `text_rect` 
 Figma text node bounds often describe only the current demo copy's tight visual bounding box. Do not blindly use the original text node `bounds` as the Unity runtime text display area. 
 Infer a practical runtime text rectangle that can support localization and longer strings while preserving the screenshot's design intent.
 
-**Primary invariant:** 
-- The inferred `text_rect` plus `text_alignment` must reproduce the current Figma text's visual position when rendering the original Figma text content. Runtime flexibility is secondary. 
-- You may enlarge a text rectangle for localization, but the current source text must not visibly drift away from its Figma position.
+**Primary invariants:**
+- `text_rect` is the design-intended runtime display area for this text. It is not the current Figma layout or raw Figma data. Infer it from the screenshot, surrounding design elements, and visible design intent, rather than copied from Figma data
+- `text_rect` plus `text_alignment` must reproduce the original Figma text's rendered visual position. The source text must not visibly drift when rendered inside the inferred rectangle.
+- `text_rect` uses the same global coordinate space and units as the simplified Figma `flatNodes[].bounds` field.
 
 ### `text_rect`
 
-`text_rect` is the inferred runtime text display rectangle:
+`text_rect` is the inferred runtime text display rectangle. Use integer values.
 
 ```json
 "text_rect": {
@@ -86,16 +87,13 @@ Infer a practical runtime text rectangle that can support localization and longe
 ```
 
 Rules:
-- Use the same global coordinate space and units as the simplified Figma `flatNodes[].bounds` field.
-- `text_rect` is NOT relative to the refined hierarchy parent GameObject.
-- `text_rect` is the maximum reasonable runtime display area for this text, inferred from the design intent. It may be larger than the source text node's original `bounds`, but it must not be mechanically expanded to a parent or mechanically kept tight to the demo string.
-- Infer the intended text area by understanding the text's role in the design, its semantic container, nearby visual boundaries, occupied visual space, spacing, and screenshot. Ask: "If this text changed at runtime, what area did the designer appear to reserve for it?"
-- Preserve the current Figma rendering result: rendering the original source text inside the inferred `text_rect` with the chosen `text_alignment` must keep the text visually in the same place.
-- Expand only into space that visually belongs to this text. The display area must not enter space occupied by other visible elements in the same perceived visual or semantic module, regardless of whether those elements are siblings, ancestors' siblings, descendants of a shared background, or stored elsewhere in the hierarchy.
-- If the surrounding design expresses a larger reserved text display slot through background shape, empty space, alignment, repeated structure, or visual rhythm, use that slot with sensible padding. If the design does not express such a slot, do not invent extra space beyond what the visible design supports.
-- When a shadow, highlight, outline, or duplicate text node represents the same visible label as a primary text node, give all layers the same inferred `text_rect` and `text_alignment`.
-- Use integer values.
-- Keep the inferred rectangle inside the relevant visual or semantic container whenever that container can be identified from Figma bounds and screenshot.
+- Generally, `text_rect` should fully contain the source Figma text node's bounds. It should not be smaller than the current Figma text rendering.
+- The render bounds of other elements in the same semantic area must not overlap `text_rect`. If overlap would occur, infer the largest non-overlapping rect that still contains the source Figma text bounds and preserves the original rendered position.
+
+Common patterns:
+- For text on a button image, infer the readable text area inside the button image as `text_rect`, not the full button image bounds.
+- Backgrounds, parents, containers, and nearby shapes are useful evidence for a text slot, but their full bounds are not automatically the text slot.
+- Shadow, highlight, outline, or duplicate layers that form one visible label should usually share the same `text_rect` and `text_alignment`.
 
 ### `text_alignment`
 
@@ -114,11 +112,9 @@ Allowed values:
 
 Inference guidance:
 - Choose alignment together with `text_rect`; they are one inferred runtime layout decision, not two independent fields.
-- Alignment should express how the text is meant to sit inside the inferred display area according to the visible design intent.
-- Do not choose an alignment only because of the source text node's tight bounds. A tight Figma text layer may still represent a wider runtime text area.
-- Do not choose an alignment only because of the parent type or object name. Use visual evidence: reserved space, neighboring elements, column structure, padding, symmetry, and screenshot.
-- When the Figma text alignment metadata conflicts with visual/semantic evidence, prefer the inferred runtime intent from layout, parent region, sibling spacing, and screenshot.
-- After choosing `text_alignment`, re-check the primary invariant: rendering the original Figma text inside the inferred `text_rect` with this alignment must still match the original Figma visual position. If it does not, revise the rectangle or alignment before saving.
+- Alignment should express how this text is meant to sit inside the inferred text display slot according to the same visible design intent.
+- Do not choose alignment from metadata, names, parent type, or any single bounds rectangle alone; when they conflict with the inferred text display slot, prefer the runtime intent expressed by the visible design.
+- After choosing `text_alignment`, re-check the primary invariants: rendering the original Figma text inside the inferred `text_rect` with this alignment must still match the original Figma visual position. If it does not, revise the rectangle or alignment before saving.
 
 ## Final child reorder
 
