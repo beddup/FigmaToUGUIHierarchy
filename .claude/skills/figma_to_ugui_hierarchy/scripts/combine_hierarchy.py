@@ -53,6 +53,11 @@ def collect_all_nodes_with_merged_children(hierarchies: List[Dict]) -> Dict[str,
         }
         if node.get('gameObjectCategory') == 'image' and node.get('image_type'):
             copied['image_type'] = node.get('image_type')
+        if node.get('gameObjectCategory') == 'text':
+            if node.get('text_rect'):
+                copied['text_rect'] = node.get('text_rect')
+            if node.get('text_alignment'):
+                copied['text_alignment'] = node.get('text_alignment')
         return copied
 
     # First pass: collect all nodes and merge children
@@ -84,6 +89,11 @@ def collect_all_nodes_with_merged_children(hierarchies: List[Dict]) -> Dict[str,
                     and node.get('image_type')
                 ):
                     existing['image_type'] = node.get('image_type')
+                if existing.get('gameObjectCategory') == 'text':
+                    if not existing.get('text_rect') and node.get('text_rect'):
+                        existing['text_rect'] = node.get('text_rect')
+                    if not existing.get('text_alignment') and node.get('text_alignment'):
+                        existing['text_alignment'] = node.get('text_alignment')
                 for child in current_children:
                     child_id = child.get('nodeId')
                     if child_id and child_id not in existing['_child_ids']:
@@ -148,6 +158,11 @@ def build_tree(node_id: str, all_nodes: Dict[str, Dict],
     }
     if result['gameObjectCategory'] == 'image' and node.get('image_type'):
         result['image_type'] = node.get('image_type')
+    if result['gameObjectCategory'] == 'text':
+        if node.get('text_rect'):
+            result['text_rect'] = node.get('text_rect')
+        if node.get('text_alignment'):
+            result['text_alignment'] = node.get('text_alignment')
 
     # Recursively build children
     for child in node.get('children', []):

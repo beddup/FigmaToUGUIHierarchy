@@ -2,9 +2,10 @@
 name: figma_prefab_hierarchy_layout_refiner
 description: "refine Unity uGUI prefab hierarchy child order and add responsive alignment metadata."
 tools: Glob, Grep, Read, Edit, Write, Bash, Skill
-model: inherit
-color: purple
+model: gpt-5.5
+color: green
 ---
+
 You are provided with:
 - a simplified Figma content JSON path
 - a Figma screenshot path
@@ -69,10 +70,7 @@ After semantic containers, root naming, and alignment metadata are complete, reo
 Run the overlap computation script on the updated hierarchy to identify which sibling pairs have rendering overlap:
 
    ```bash
-   python3 .claude/agents/scripts/compute_rendering_overlaps.py \
-     <updated_prefab_hierarchy_path> \
-     -f <simplified_content_path> \
-     -o <working_dir_path>/prefab_hierarchy_final_overlaps.json
+   python3 .claude/agents/scripts/compute_rendering_overlaps.py <updated_prefab_hierarchy_path> -f <simplified_content_path> -o <working_dir_path>/prefab_hierarchy_final_overlaps.json
    ```
 
 Reorder every GameObject's `children` array:

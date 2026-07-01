@@ -1,10 +1,11 @@
 ---
 name: fetch_figma_content
 description: "fetch and save figma content data and its screenshot"
-tools: Glob, Grep, Read, WebFetch, WebSearch, Edit, Write, Bash, Skill
-model: inherit
+tools: Glob, Grep, Read, Edit, Write, Bash, Skill
+model: gpt-5.4-mini
 color: green
 ---
+
 You are given a figma content url.
 The fetch script reads the Figma API token from the `FIGMA_API_TOKEN` environment variable.
 Do not pass, print, or include the token in any output.
