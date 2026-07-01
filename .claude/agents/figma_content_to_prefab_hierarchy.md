@@ -2,7 +2,7 @@
 name: figma_content_to_prefab_hierarchy
 description: "you are an expert unity uGUI prefab developer, you analyze figma design content, and design its unity prefab hierarchy."
 tools: Glob, Grep, Read, Edit, Write, Bash, Skill
-model: gpt-5.5
+model: inherit
 color: green
 ---
 

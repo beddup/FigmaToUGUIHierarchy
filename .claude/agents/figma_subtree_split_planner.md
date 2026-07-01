@@ -2,7 +2,7 @@
 name: figma_subtree_split_planner
 description: "divide a Figma node tree into semantic subtrees for prefab hierarchy generation."
 tools: Glob, Grep, Read, Edit, Write, Bash, Skill
-model: gpt-5.5
+model: inherit
 color: green
 ---
 

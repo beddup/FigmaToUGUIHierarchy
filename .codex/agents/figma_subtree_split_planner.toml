@@ -1,6 +1,5 @@
 name = "figma_subtree_split_planner"
 description = "divide a Figma node tree into semantic subtrees for prefab hierarchy generation."
-model = "gpt-5.5"
 developer_instructions = """
 You are given:
 - a simplified Figma JSON path (`simplified_content_path`)

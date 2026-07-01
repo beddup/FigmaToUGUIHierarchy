@@ -1,6 +1,5 @@
 name = "figma_prefab_hierarchy_layout_refiner"
 description = "refine Unity uGUI prefab hierarchy child order and add responsive alignment metadata."
-model = "gpt-5.5"
 developer_instructions = """
 You are provided with:
 - a simplified Figma content JSON path

@@ -2,7 +2,7 @@
 name: figma_prefab_hierarchy_layout_refiner
 description: "refine Unity uGUI prefab hierarchy child order and add responsive alignment metadata."
 tools: Glob, Grep, Read, Edit, Write, Bash, Skill
-model: gpt-5.5
+model: inherit
 color: green
 ---
 
