@@ -17,8 +17,8 @@ Your job is to refine the prefab hierarchy so it is more suitable for a human-ma
 # Workflow
 
 Important workflow ordering:
-- First complete semantic hierarchy refinement: introduce all needed containers, root naming, alignment inference, and text layout inference.
-- Only after the hierarchy structure and text layout are complete, run the overlap computation and perform the final child reordering.
+- First complete semantic hierarchy refinement: introduce all needed containers, root naming, alignment inference.
+- Only after the hierarchy structure is complete, run the overlap computation and perform the final child reordering.
 - Do not use possible render-order concerns as a reason to skip semantic grouping. Container introduction is a semantic organization step; render order is resolved in the final child-reordering step.
 
 ## Refine the hierarchy
@@ -59,66 +59,10 @@ Use the alignment that best supports multiple mobile screen sizes:
 For a container, choose the alignment based on the container's overall visual responsibility, not only its first child.
 For a root screen node, use `horizontal_alignment = center` and `vertical_alignment = center`.
 For full-screen backgrounds, use `horizontal_alignment = center` and `vertical_alignment = center` unless the screenshot clearly shows edge-specific anchoring.
-   
-
-## Infer runtime text layout
-
-For every GameObject whose `gameObjectCategory` is `text`, add both `text_rect` and `text_alignment`.
-
-Figma text node bounds often describe only the current demo copy's tight visual bounding box. Do not blindly use the original text node `bounds` as the Unity runtime text display area. 
-Infer a practical runtime text rectangle that can support localization and longer strings while preserving the screenshot's design intent.
-
-**Primary invariants:**
-- `text_rect` is the design-intended runtime display area for this text. It is not the current Figma layout or raw Figma data. Infer it from the screenshot, surrounding design elements, and visible design intent, rather than copied from Figma data
-- `text_rect` plus `text_alignment` must reproduce the original Figma text's rendered visual position. The source text must not visibly drift when rendered inside the inferred rectangle.
-- `text_rect` uses the same global coordinate space and units as the simplified Figma `flatNodes[].bounds` field.
-
-### `text_rect`
-
-`text_rect` is the inferred runtime text display rectangle. Use integer values.
-
-```json
-"text_rect": {
-  "x": 120,
-  "y": 340,
-  "width": 520,
-  "height": 72
-}
-```
-
-Rules:
-- Generally, `text_rect` should fully contain the source Figma text node's bounds. It should not be smaller than the current Figma text rendering.
-- The render bounds of other elements in the same semantic area must not overlap `text_rect`. If overlap would occur, infer the largest non-overlapping rect that still contains the source Figma text bounds and preserves the original rendered position.
-
-Common patterns:
-- For text on a button image, infer the readable text area inside the button image as `text_rect`, not the full button image bounds.
-- Backgrounds, parents, containers, and nearby shapes are useful evidence for a text slot, but their full bounds are not automatically the text slot.
-- Shadow, highlight, outline, or duplicate layers that form one visible label should usually share the same `text_rect` and `text_alignment`.
-
-### `text_alignment`
-
-`text_alignment` is the inferred text rendering alignment:
-
-```json
-"text_alignment": {
-  "horizontal": "center",
-  "vertical": "middle"
-}
-```
-
-Allowed values:
-- `horizontal`: `left`, `center`, `right`
-- `vertical`: `top`, `middle`, `bottom`
-
-Inference guidance:
-- Choose alignment together with `text_rect`; they are one inferred runtime layout decision, not two independent fields.
-- Alignment should express how this text is meant to sit inside the inferred text display slot according to the same visible design intent.
-- Do not choose alignment from metadata, names, parent type, or any single bounds rectangle alone; when they conflict with the inferred text display slot, prefer the runtime intent expressed by the visible design.
-- After choosing `text_alignment`, re-check the primary invariants: rendering the original Figma text inside the inferred `text_rect` with this alignment must still match the original Figma visual position. If it does not, revise the rectangle or alignment before saving.
 
 ## Final child reorder
 
-After semantic containers, root naming, alignment metadata, and text layout are complete, reorder gameobject children so that the hierarchy matches human authoring habits while preserving the Figma render result.
+After semantic containers, root naming, and alignment metadata are complete, reorder gameobject children so that the hierarchy matches human authoring habits while preserving the Figma render result.
 
 Run the overlap computation script on the updated hierarchy to identify which sibling pairs have rendering overlap:
 
