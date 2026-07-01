@@ -79,11 +79,16 @@ Reorder every GameObject's `children` array:
 - Preserve every existing child exactly once.
 - Do not remove semantic containers created earlier. Only adjust sibling order where it is safe.
    
-## Validate the final JSON against `.codex/agents/examples/prefab_hierarchy_schema.json`.
-
 # Output
 
+Before output, validate the saved prefab hierarchy JSON:
+
+```bash
+python3 .codex/agents/scripts/validate_prefab_hierarchy_schema.py <prefab_hierarchy_json_path>
+```
+
+If validation fails, fix the hierarchy JSON and run the validator again until it passes.
+
 You must save the refined hierarchy to `<working_dir_path>/<root gameObjectName>_hierarchy.json` and output only the refined hierarchy file path.
-Do not output markdown or explanation.
 
 """

@@ -164,11 +164,10 @@ Infer a practical runtime text rectangle that can support localization and longe
 
 Rules:
 - Generally, `text_rect` should fully contain the source Figma text node's bounds. It should not be smaller than the current Figma text rendering.
-- The render bounds of other elements in the same semantic area must not overlap `text_rect`. If overlap would occur, infer the largest non-overlapping rect that still contains the source Figma text bounds and preserves the original rendered position.
+- The `text_rect` must not overlap any element in the same semantic area. If overlap would occur, infer the largest non-overlapping rect that still contains the source Figma text bounds and preserves the original rendered position.
 
 Common patterns:
-- For text on a button image, infer the readable text area inside the button image as `text_rect`, not the full button image bounds.
-- Backgrounds, parents, containers, and nearby shapes are useful evidence for a text slot, but their full bounds are not automatically the text slot.
+- For text on a button image, infer the readable text area inside the button image as `text_rect` considering it padding, not the full button image bounds.
 - Shadow, highlight, outline, or duplicate layers that form one visible label should usually share the same `text_rect` and `text_alignment`.
 
 ### `text_alignment`
@@ -208,6 +207,14 @@ Node A : background group
 Node A represent a background image. it should be a image category gameobject. and Node B,C,D are ignored    
     
 # Output
+
+Before output, validate the saved prefab hierarchy JSON:
+
+```bash
+python3 .codex/agents/scripts/validate_prefab_hierarchy_schema.py <prefab_hierarchy_json_path>
+```
+
+If validation fails, fix the hierarchy JSON and run the validator again until it passes.
 
 You save the prefab hierarchy json, and output the file path
 
