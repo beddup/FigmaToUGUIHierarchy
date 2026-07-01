@@ -68,19 +68,19 @@ For full-screen backgrounds, use `horizontal_alignment = center` and `vertical_a
 
 ## Final child reorder
 
-After semantic containers, root naming, and alignment metadata are complete, reorder gameobject children so that the hierarchy matches human authoring habits while preserving the Figma render result.
-
-Run the overlap computation script on the updated hierarchy to identify which sibling pairs have rendering overlap:
+After semantic containers, root naming, and alignment metadata are complete, run the deterministic reorder script to reorder every GameObject's `children` array:
 
    ```bash
-   python3 .claude/agents/scripts/compute_rendering_overlaps.py <updated_prefab_hierarchy_path> -f <simplified_content_path> -o <working_dir_path>/prefab_hierarchy_final_overlaps.json
+   python3 .claude/agents/scripts/reorder_children.py <updated_prefab_hierarchy_path> -f <simplified_content_path> -o <working_dir_path>/prefab_hierarchy_reordered.json
    ```
 
-Reorder every GameObject's `children` array:
-- Follow the rules at `.claude/agents/doc/gameobject_reorder_rules.md`.
-- MUST respect the overlap constraints in the final overlap report. Overlapped sibling pairs must preserve their relative render order.
-- Preserve every existing child exactly once.
-- Do not remove semantic containers created earlier. Only adjust sibling order where it is safe.
+The script applies the rules described in `.claude/agents/doc/gameobject_reorder_rules.md`:
+- Overlapping sibling pairs preserve their Figma relative render order (constrained by effective sibling index).
+- Non-overlapping siblings are sorted by spatial position: X-first (left-to-right) when the parent is wider than tall, Y-first (top-to-bottom) when the parent is taller than or equal to wide.
+- Every child is preserved exactly once. No containers are added or removed.
+- If the script emits warnings for pairs with no derived siblingIndex, review those pairs manually against the screenshot.
+
+Use the reordered file for the remaining steps.
    
 # Output
 
