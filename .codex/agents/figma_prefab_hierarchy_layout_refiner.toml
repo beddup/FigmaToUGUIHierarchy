@@ -27,16 +27,21 @@ Important workflow ordering:
 
 2. Introduce intermediate `container` gameobjects.
    - Following the rules in `.codex/agents/doc/Semantic Container Grouping Rules.md`
-   - Keep the hierarchy clean, readable, and maintainable for future authors. DO NOT create `container` gameobjects for a single child gameobject.
-   - Do not miss any text, image and color nodes. Remove empty container gameobjects
+   - Keep the hierarchy clean, readable, and maintainable for future authors. You may be slightly aggressive in creating containers — a downstream cleanup script will remove unnecessary ones.
+   - Do not miss any text, image and color nodes.
    - Every node in the hierarchy must appear exactly once in the refined output hierarchy.
-   - Must save the updated hierarchy, so that the next stage can read right hierarchy.
+   - Must save the updated hierarchy, so that the next stage can read the right hierarchy.
 
-3. Before continuing, audit the hierarchy and remove invalid synthetic containers:
-   - Remove any synthetic `container` GameObject with exactly one child by promoting that child to the synthetic container's parent.
-   - A synthetic container is one whose `nodeId` was derived for grouping, such as `<parentNodeId>:group_<GameObjectName>`, and does not correspond to a real Figma node.
-   - Do not remove a real Figma container node, even if it currently has one child.
-   - Re-check after promotion because removing one synthetic container can create another single-child synthetic container at the parent level.
+3. Run the synthetic-container cleanup script to remove pointless wrappers:
+
+   ```bash
+   python3 .codex/agents/scripts/cleanup_synthetic_containers.py \
+     --hierarchy <updated_prefab_hierarchy_path> \
+     --figma <simplified_content_path> \
+     --output <updated_prefab_hierarchy_path>
+   ```
+
+   The script identifies synthetic containers (nodeId contains `:group_` OR nodeId is absent from the Figma content), then iteratively removes empty containers and promotes single-child containers until the tree is stable.
 
 ## Give the root GameObject a meaningful `gameObjectName` that expresses the whole screen or prefab content.
 - PascalCase English names that summarize the design intent.

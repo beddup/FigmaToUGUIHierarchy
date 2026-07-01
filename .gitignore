@@ -11,3 +11,4 @@ Assets/
 
 # Local agent configuration may contain machine-specific permissions.
 .claude/settings.local.json
+worktrees/

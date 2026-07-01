@@ -11,8 +11,6 @@ For any set of sibling children that share a common semantic purpose, spatial re
 The container becomes a direct child of the original parent, and the grouped children become its children, preserving their relative order.
 When Figma hierarchy, naming, or bounds do not make the relationship clear, inspect the screenshot and infer how the visible UI would be perceived by a user. The screenshot is the tie-breaker for deciding whether nearby elements belong to the same semantic group.
 
-Do not keep synthetic grouping containers with only one child. A synthetic container is useful only when it groups multiple related children. If a synthetic container ends up with exactly one child, remove the synthetic container and promote its child to the original parent. Repeat this cleanup until no single-child synthetic containers remain.
-
 ### Spatial region patterns
 
 - **Top region**: controls, titles, indicators, or decorative elements anchored to the top edge of the screen or parent → group into a top-bar container.
