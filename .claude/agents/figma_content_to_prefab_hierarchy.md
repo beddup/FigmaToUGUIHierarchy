@@ -166,11 +166,12 @@ Infer a practical runtime text rectangle that can support localization and longe
 ```
 
 Rules:
-- Generally, `text_rect` should fully contain the source Figma text node's bounds. It should not be smaller than the current Figma text rendering.
+- `text_rect` should fully contain the source Figma text node's bounds. Generally, a large rect is better than a small one, so it can look well when runtime text becomes longer.
 - The `text_rect` must not overlap any element in the same semantic area. If overlap would occur, infer the largest non-overlapping rect that still contains the source Figma text bounds and preserves the original rendered position.
+- If the design intent indicates that the text and nearby image GameObjects should not visually cover each other, the text's `text_rect` must not overlap those image GameObjects' bounds.
 
 Common patterns:
-- For text on a button image, infer the readable text area inside the button image as `text_rect` considering it padding, not the full button image bounds.
+- For text on a button image, recognise its visual padding, corner and edge. Infer the most reasonable area as its `text_rect`, so that it will not overlap the padding/corner/edge zone in the button image while keeping the original Figma text's rendered visual position.
 - Shadow, highlight, outline, or duplicate layers that form one visible label should usually share the same `text_rect` and `text_alignment`.
 
 ### `text_alignment`

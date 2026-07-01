@@ -38,10 +38,7 @@ Important workflow ordering:
 3. Run the synthetic-container cleanup script to remove pointless wrappers:
 
    ```bash
-   python3 .claude/agents/scripts/cleanup_synthetic_containers.py \
-     --hierarchy <updated_prefab_hierarchy_path> \
-     --figma <simplified_content_path> \
-     --output <updated_prefab_hierarchy_path>
+   python3 .claude/agents/scripts/cleanup_synthetic_containers.py --hierarchy <updated_prefab_hierarchy_path> --figma <simplified_content_path> --output <updated_prefab_hierarchy_path>
    ```
 
 ## Give the root GameObject a meaningful `gameObjectName` that expresses the whole screen or prefab content.

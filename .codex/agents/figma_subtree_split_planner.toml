@@ -116,9 +116,7 @@ Choose the group count dynamically from the total source node count:
 Analyze the plan before creating any subtree files:
 
 ```bash
-python3 .codex/agents/scripts/semantic_divide_figma_tree.py analyze-plan \
-  <simplified_content_path> <working_dir_path>/semantic_plan.json \
-  -o <working_dir_path>/semantic_plan_analysis.json
+python3 .codex/agents/scripts/semantic_divide_figma_tree.py analyze-plan <simplified_content_path> <working_dir_path>/semantic_plan.json -o <working_dir_path>/semantic_plan_analysis.json
 ```
 
 This validates both **disjointness** (no ancestor/descendant boundary pairs across groups) and **coverage** (every node is reachable). Output:
@@ -161,9 +159,7 @@ Re-run `analyze-plan` and Repeat until `planValidation.valid` is `true`.
 Once Step 3 produces a valid plan, extract the subtree files:
 
 ```bash
-python3 .codex/agents/scripts/semantic_divide_figma_tree.py apply-plan \
-  <simplified_content_path> <working_dir_path>/semantic_plan.json \
-  --output-dir <working_dir_path>
+python3 .codex/agents/scripts/semantic_divide_figma_tree.py apply-plan <simplified_content_path> <working_dir_path>/semantic_plan.json --output-dir <working_dir_path>
 ```
 
 `apply-plan` rejects invalid plans — it will not create subtree files if overlaps or uncovered nodes remain.
@@ -184,4 +180,5 @@ Return a JSON object with the final list of all subtree file paths:
     "<working_dir_path>/semantic_001_PrimaryRegion.json"
   ]
 }
-```"""
+```
+"""

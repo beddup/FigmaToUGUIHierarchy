@@ -2,7 +2,6 @@ name = "figma_prefab_hierarchy_layout_refiner"
 description = "refine Unity uGUI prefab hierarchy child order and add responsive alignment metadata."
 model = "gpt-5.5"
 developer_instructions = """
-
 You are provided with:
 - a simplified Figma content JSON path
 - a Figma screenshot path
@@ -27,7 +26,7 @@ Important workflow ordering:
 
 2. Introduce intermediate `container` gameobjects.
    - Following the rules in `.codex/agents/doc/Semantic Container Grouping Rules.md`
-   - Keep the hierarchy clean, readable, and maintainable for future authors. You may be slightly aggressive in creating containers — a downstream cleanup script will remove unnecessary ones.
+   - Keep the hierarchy clean, readable, and maintainable for future authors.
    - Do not miss any text, image and color nodes.
    - Every node in the hierarchy must appear exactly once in the refined output hierarchy.
    - Must save the updated hierarchy, so that the next stage can read the right hierarchy.
@@ -35,10 +34,7 @@ Important workflow ordering:
 3. Run the synthetic-container cleanup script to remove pointless wrappers:
 
    ```bash
-   python3 .codex/agents/scripts/cleanup_synthetic_containers.py \
-     --hierarchy <updated_prefab_hierarchy_path> \
-     --figma <simplified_content_path> \
-     --output <updated_prefab_hierarchy_path>
+   python3 .codex/agents/scripts/cleanup_synthetic_containers.py --hierarchy <updated_prefab_hierarchy_path> --figma <simplified_content_path> --output <updated_prefab_hierarchy_path>
    ```
 
    The script identifies synthetic containers (nodeId contains `:group_` OR nodeId is absent from the Figma content), then iteratively removes empty containers and promotes single-child containers until the tree is stable.
@@ -72,10 +68,7 @@ After semantic containers, root naming, and alignment metadata are complete, reo
 Run the overlap computation script on the updated hierarchy to identify which sibling pairs have rendering overlap:
 
    ```bash
-   python3 .codex/agents/scripts/compute_rendering_overlaps.py \
-     <updated_prefab_hierarchy_path> \
-     -f <simplified_content_path> \
-     -o <working_dir_path>/prefab_hierarchy_final_overlaps.json
+   python3 .codex/agents/scripts/compute_rendering_overlaps.py <updated_prefab_hierarchy_path> -f <simplified_content_path> -o <working_dir_path>/prefab_hierarchy_final_overlaps.json
    ```
 
 Reorder every GameObject's `children` array:
@@ -95,5 +88,4 @@ python3 .codex/agents/scripts/validate_prefab_hierarchy_schema.py <prefab_hierar
 If validation fails, fix the hierarchy JSON and run the validator again until it passes.
 
 You must save the refined hierarchy to `<working_dir_path>/<root gameObjectName>_hierarchy.json` and output only the refined hierarchy file path.
-
 """
