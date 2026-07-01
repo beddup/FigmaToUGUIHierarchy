@@ -4,7 +4,7 @@ description: This is a workflow for creating prefab hierarchy from figma url.
 allowed-tools: Read, Grep, Glob, Write, Bash, Edit, Skill
 ---
 
-You are provided a Figma content URL.
+You are provided a Figma content URL .
 
 Ensure the Figma API token is available before starting:
 
@@ -15,9 +15,13 @@ Follow the steps to create unity prefab hierarchy.
 
 ## Step 1 : get the figma content
 
-start a subagent `fetch_figma_content`, pass only the figma content URL to it. The subagent's fetch script reads `FIGMA_API_TOKEN` from the environment.
+Run the python script `.claude/skills/figma_to_ugui_hierarchy/scripts/fetch_all_figma.py` from the project root. The script reads `FIGMA_API_TOKEN` from the environment.
 
-we will get a json data
+```bash
+python3 .claude/skills/figma_to_ugui_hierarchy/scripts/fetch_all_figma.py "<figma_url>"
+```
+
+The script outputs a JSON object to stdout:
 
 ```json
 {
@@ -97,19 +101,18 @@ Output only the refined hierarchy file path, the file name should be `<root game
 
 ## Step 6: Create the result json file
 
-Get the last path component of `working_dir_path` as `working_dir_name`;
-Create a folder with name `<root gameObjectName>_<working_dir_name>` at path `Assets/FigmaData`.
-Then under this folder, create a json file named `<root gameObjectName>_<working_dir_name>_hierarchy_result.json`;
-The content is
+Write a short summary about the figma content (under 50 words), then run the python script `.claude/skills/figma_to_ugui_hierarchy/scripts/package_result.py` from the project root:
 
-```json
-{
-  "figma_url":"figma_url from Step 1",
-  "file_key": "file_key from Step 1", 
-  "node_id": "node_id from Step 1",
-  "node_name": "node_name from Step 1",
-  "summary":"a short description about the figma content, under 50 words",
-  "raw_content_path": "copy the file at raw_content_path from Step 1 to folder `Assets/FigmaData/<working_dir_name>`, use relative path",
-  "prefab_hierarchy_path": "copy the refine prefab hierarchy file from Step 5 to folder `Assets/FigmaData/<working_dir_name>`, use relation path"
-}
+```bash
+python3 .claude/skills/figma_to_ugui_hierarchy/scripts/package_result.py \
+  --figma-url "<figma_url from Step 1>" \
+  --file-key "<file_key from Step 1>" \
+  --node-id "<node_id from Step 1>" \
+  --node-name "<node_name from Step 1>" \
+  --summary "<short description>" \
+  --working-dir "<working_dir_path from Step 1>" \
+  --raw-content "<raw_content_path from Step 1>" \
+  --prefab-hierarchy "<prefab_hierarchy_path from Step 5>"
 ```
+
+The script creates the output folder `Assets/FigmaData/<rootName>_<workingDirName>/`, copies the referenced files into it, writes the result JSON, and prints the result path to stdout.
