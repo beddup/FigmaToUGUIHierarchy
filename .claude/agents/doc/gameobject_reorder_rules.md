@@ -3,15 +3,14 @@
 
 For each GameObject's direct children, reorder them using these priorities:
 
-1. Visual layer order: lower/background elements come before upper/foreground elements.
-2. Vertical position: top elements come before bottom elements.
-3. Horizontal position: left elements come before right elements.
-4. Semantic cohesion: keep a coherent control, label, icon, state group, or reusable module together.
-5. Do not move a child outside its parent unless the current hierarchy is clearly wrong for Unity prefab authoring and the screenshot plus Figma content prove the better parent.
+1. Vertical position: top elements come before bottom elements.
+2. Horizontal position: left elements come before right elements.
+3. Semantic cohesion: keep a coherent control, label, icon, state group, or reusable module together.
+4. Do not move a child outside its parent unless the current hierarchy is clearly wrong for Unity prefab authoring and the screenshot plus Figma content prove the better parent.
 
-**IMPORTANT:** These rules only apply when sibling children do NOT visually overlap. When two children's actual rendered pixels overlap, you MUST follow the **Rendering Area Overlap Rule** below instead — it determines the correct order and overrides rules 1–5.
+**IMPORTANT:** These rules only apply when sibling children do NOT visually overlap. When two children's actual rendered pixels overlap, you MUST follow the **Rendering Area Overlap Rule** below instead — it determines the correct order and overrides rules 1–4.
 
-This order is intended for Unity hierarchy readability and draw order: background/base objects appear earlier, foreground/overlay objects appear later.
+This order is intended for Unity hierarchy readability for non-overlapping siblings. Background/foreground draw order is handled by the overlap report, not by a separate visual-layer sorting rule.
 
 ## Rendering Area Overlap Rule
 
@@ -49,8 +48,8 @@ Synthetic containers have `figmaSiblingIndex: null`. Use spatial position and th
 
 | Condition | Rule                                                                                                                                                                                                                |
 |-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Pair is **NOT** in `overlapConstraints` | A and B can be ordered freely. Use Child Order Rules 1–5.                                                                                                                                                           |
-| Pair **IS** in `overlapConstraints` | A and B **MUST** preserve their Figma relative order: the child with the **higher** `figmaSiblingIndex` must appear **later** in the Unity hierarchy children array. This rule overrides all Child Order Rules 1–5. |
+| Pair is **NOT** in `overlapConstraints` | A and B can be ordered freely. Use Child Order Rules 1–4.                                                                                                                                                           |
+| Pair **IS** in `overlapConstraints` | A and B **MUST** preserve their Figma relative order: the child with the **higher** `figmaSiblingIndex` must appear **later** in the Unity hierarchy children array. This rule overrides all Child Order Rules 1–4. |
 
 If either child has a `null` `figmaSiblingIndex`, determine the correct stacking from the screenshot and the visible pixel order.
 
