@@ -76,7 +76,7 @@ def _fetch_figma_node(file_key: str, node_id: str, token: str) -> Optional[Dict]
         return None
 
 
-def _fetch_figma_screenshot(file_key: str, node_id: str, token: str, scale: int = 2) -> Optional[bytes]:
+def _fetch_figma_screenshot(file_key: str, node_id: str, token: str, scale: int = 1) -> Optional[bytes]:
     """Fetch a PNG screenshot of a Figma node (REST API)."""
     encoded = node_id.replace('-', ':')
     url = f"https://api.figma.com/v1/images/{file_key}?ids={encoded}&scale={scale}&format=png"
@@ -377,7 +377,7 @@ def main():
         json.dump(node_data_full, f, indent=2, ensure_ascii=False)
     print(f"  Raw data saved to: {raw_path}", file=sys.stderr)
 
-    screenshot_data = _fetch_figma_screenshot(file_key, node_id, token, scale=2)
+    screenshot_data = _fetch_figma_screenshot(file_key, node_id, token, scale=1)
     if not screenshot_data:
         print("Error: Failed to fetch screenshot.", file=sys.stderr)
         sys.exit(1)
