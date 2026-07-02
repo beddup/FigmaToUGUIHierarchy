@@ -42,7 +42,7 @@ Important workflow ordering:
    ```
 
 ## Give the root GameObject a meaningful `gameObjectName` that expresses the whole screen or prefab content.
-- PascalCase English names that summarize the design intent.
+- **PascalCase English names** that summarize the design intent.
 
 ## Figure out the right `horizontal_alignment` and `vertical_alignment` filed value for every node
    
