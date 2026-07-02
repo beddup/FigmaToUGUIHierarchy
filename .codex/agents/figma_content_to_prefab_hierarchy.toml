@@ -126,7 +126,7 @@ This field is **only required** for `image` category gameobjects. Do NOT set it 
 ## `gameObjectName`
 
 - Use PascalCase for gameObject names
-- Use a meaningful descriptive name.
+- Use a meaningful and descriptive human read name. Don't attach nodeId  and nodeName in it.
 
 ## `isButton`
 
