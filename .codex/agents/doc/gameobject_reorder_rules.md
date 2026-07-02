@@ -19,7 +19,13 @@ This order is intended for Unity hierarchy readability for non-overlapping sibli
 Two sibling children A and B can be reordered freely in the Unity hierarchy *only if* their actual rendered pixels never overlap on screen.
 A container's `bounds` (which enclose all its descendants) can span a huge area — so comparing `bounds` directly produces false positives: it marks two nodes as "overlapping" when their visible content sits in completely separate regions.
 
-You must compare **real rendering areas**, not container bounds.
+You must compare **real rendering areas**, not container bounds. A hierarchy
+GameObject is renderable when its `gameObjectCategory` is `text`, `image`, or
+`color`; use the corresponding Figma node's bounds for that GameObject. For a
+container, its rendering areas are the bounds of all renderable descendant
+GameObjects, plus itself only if the container is also one of those renderable
+categories. Do not infer extra rendering areas from raw Figma subtree fills/text
+that do not have corresponding renderable hierarchy GameObjects.
 
 The resulting overlap report is json formatted as follows:
 
@@ -49,9 +55,30 @@ Synthetic containers have `figmaSiblingIndex: null`. Use spatial position and th
 | Condition | Rule                                                                                                                                                                                                                |
 |-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Pair is **NOT** in `overlapConstraints` | A and B can be ordered freely. Use Child Order Rules 1–4.                                                                                                                                                           |
-| Pair **IS** in `overlapConstraints` | A and B **MUST** preserve their Figma relative order: the child with the **higher** `figmaSiblingIndex` must appear **later** in the Unity hierarchy children array. This rule overrides all Child Order Rules 1–4. |
+| Pair **IS** in `overlapConstraints` | A and B **MUST** preserve their Figma relative order. Collect the render nodes from both GameObjects that actually participate in this overlap, find their nearest common Figma ancestor `G`, scan `G.children` from front to back, and use the first involved branch to decide which GameObject comes first. This rule overrides all Child Order Rules 1–4. |
 
-If either child has a `null` `figmaSiblingIndex`, determine the correct stacking from the screenshot and the visible pixel order.
+If no common-ancestor branch order can be determined, preserve the original
+relative order and warn so the grouping can be revised if needed.
+
+Important: Figma `siblingIndex` is local to its `parentId`. Never compare
+`siblingIndex` values from different parents or from different component-instance
+internals.
+
+### Common Ancestor Scan
+
+When GameObject A and B overlap:
+
+1. Collect all renderable hierarchy nodes from A and B that participate in any
+   A/B overlap.
+2. Find the nearest common Figma ancestor `G` of those involved render nodes.
+3. Project each involved render node to the direct child branch under `G`.
+4. Traverse `G.children` in `siblingIndex` order.
+5. Stop at the first branch that contains an involved render node. If that
+   branch belongs to A, A must come before B; if it belongs to B, B must come
+   before A.
+
+If a branch contains involved render nodes from both A and B, the grouping cannot
+be represented by a single A/B order; keep the original order and warn.
 
 ### What "must preserve Figma relative order" means
 
