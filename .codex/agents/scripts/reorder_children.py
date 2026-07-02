@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 """
 Reorder children in a prefab hierarchy for Unity readability while preserving
-rendering order for overlapping siblings.
+Figma rendering order whenever sibling GameObjects visually overlap.
 
 Principles:
-1. Don't move children across parents — only reorder within each parent's children array.
-2. Container visual bounds = union of all renderable hierarchy descendants.
-   A hierarchy GameObject is renderable when its gameObjectCategory is text,
-   image, or color; use its corresponding Figma node bounds.
-3. Overlap between sibling children → dependency constraint that must be preserved.
-4. Overlapping siblings: first compare the direct Figma siblings when they share
-   a parentId. If that is unavailable, compare only overlapping visual areas
-   whose parentId values match. siblingIndex is local to parentId and must never
-   be compared across parents or component-instance internals.
-5. Non-overlapping siblings are sorted by position:
-   - parent width > height  → X-first (left-to-right), then Y (top-to-bottom)
-   - parent height >= width  → Y-first (top-to-bottom), then X (left-to-right)
-6. Topological sort with a priority heap, tie-broken by original child index for
-   deterministic output.
+1. Reorder only inside each parent's children array; never move a child across
+   hierarchy parents.
+2. A child container's visual bounds are the union of all renderable hierarchy
+   descendants. A hierarchy GameObject is renderable when its
+   gameObjectCategory is text, image, or color, and its own Figma node bounds
+   are used as the visual area.
+3. Non-overlapping sibling children are free to move and are sorted by position:
+   - parent visual width > height -> X-first (left-to-right), then Y
+   - parent visual height >= width -> Y-first (top-to-bottom), then X
+4. Overlapping sibling children create dependency constraints. For each
+   overlapping pair, collect only the render nodes that participate in the
+   overlap, find their nearest common Figma ancestor, project them to direct
+   child branches under that ancestor, then use those branches' Figma sibling
+   order to decide which hierarchy child must come first.
+5. If overlapping nodes cannot be compared through a common ancestor branch
+   order, keep their original relative hierarchy order and emit a warning.
+6. Apply the constraints with a topological sort using a spatial priority heap;
+   original child index is the final tie-breaker for deterministic output.
 """
 
 import json
