@@ -112,15 +112,26 @@ When `gameObjectCategory` is `image`, you **MUST** set the `image_type` field to
 
 | value | Unity equivalent | description |
 |-------|-----------------|-------------|
-| `simple` | `Image.Type.Simple` | basic fill — the image scales to fit the rect without any slicing or tiling |
 | `sliced` | `Image.Type.Sliced` | 9-slice fill — the image is divided into 9 regions using a border, corners stay unscaled while edges and center stretch |
 | `tiled` | `Image.Type.Tiled` | tiled fill — the image repeats to fill the rect area |
+| `simple` | `Image.Type.Simple` | basic fill (default) |
 
 **How to decide which image_type to use:**
 
-- Use `simple` as the default for most images (icons, backgrounds, common UI elements).
-- Use `sliced` when he visual design suggests a 9-slice pattern (distinct corner/edge/center regions).
-- Use `tiled` when: The visual content is meant to repeat across the available space rather than stretch.
+Decision order:
+
+1. First decide whether the image should be `sliced`.
+   - Core positive principle: use `sliced` only when the image has a safe stretch zone. A safe stretch zone is a middle region that can stretch horizontally and/or vertically without changing the visual meaning because the pixels/visual content along that direction are identical, nearly identical, uniform, smoothly continuous, or intentionally repeatable.
+   - Core negative principle: do NOT use `sliced` when the middle region contains non-repeatable complex art, icons, text, symbols, character/prop art, unique decorations, irregular texture, perspective detail, asymmetric highlight, or any feature that would look wrong when stretched.
+   - Common `sliced` examples: button background with preserved left/right caps, rounded panel with plain center, dialog/card/list-cell background with border and stretchable center, input field frame, progress-bar frame/fill with repeatable middle, title bar or separator bar with preserved end caps, a grouped frame made from corners/edges/center pieces.
+   - UI semantics such as button, panel, card, list item, input field, tab, badge, tooltip, slot, banner, or bar are candidate signals only. They should make you check carefully for a safe stretch zone; they do not by themselves prove `sliced`.
+
+2. If it is not `sliced`, decide whether the image should be `tiled`.
+   - Core positive principle: use `tiled` only when the visual content is designed to repeat as units across the rect instead of being stretched. The repeated unit should remain visually correct when copied multiple times horizontally and/or vertically.
+   - Core negative principle: do NOT use `tiled` for one-off artwork, icons, photos, screenshots, text-containing images, non-repeatable gradients, unique ornaments, asymmetric decoration, or anything where visible repetition would look accidental.
+   - Common `tiled` examples: repeating texture, wallpaper pattern, stripes, checker/grid, dotted pattern, repeated small motif, tileable noise, repeated border strip.
+
+3. Otherwise, use `simple`.
 
 This field is **only required** for `image` category gameobjects. Do NOT set it for `text`, `color`, or `container` categories.
 
